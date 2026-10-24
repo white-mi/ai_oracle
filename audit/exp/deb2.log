@@ -1,0 +1,6 @@
+rows 100 (disagree 50, unanimous controls 50), calls 200
+[deb2] 50/200 done, 163s, cost $1.39, errors 0
+[deb2] 100/200 done, 306s, cost $2.80, errors 0
+[deb2] 150/200 done, 457s, cost $4.23, errors 0
+[deb2] 200/200 done, 609s, cost $5.73, errors 0
+deb2 rows 200 errors 0 cost 5.73

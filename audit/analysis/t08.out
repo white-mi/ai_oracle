@@ -1,0 +1,14 @@
+distinct shared rows 1153 same row_uid in A and B: 838 different: 315
+rows whose A cache key is in committed cache: 415 | B cache key in committed cache: 100 | both: 100 | both and same file: 100
+hasA     False True       
+hasB     False False True 
+same_uid                  
+False        0   315     0
+True       738     0   100
+
+statements of the form 'Source k (Month Year)' checked against the packet committed for A's cache key
+A reasoning: consistent 76 inconsistent 1
+B R1, same row_uid as A: rows 100; consistent 54, inconsistent 0; rows with any statement 19, rows with >=1 inconsistent 0
+B R1, different row_uid: rows 315; consistent 82, inconsistent 57; rows with any statement 46, rows with >=1 inconsistent 28
+
+Medicaid row: A uid row0082_KXMEDICAIDCUTS_2ab1eb012fb9 | B uid row0382_KXMEDICAIDCUTS_391791d184d7

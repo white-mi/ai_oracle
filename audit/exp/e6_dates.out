@@ -1,0 +1,11 @@
+sources 4285 in 430 packets
+  undated sources: 906 (21.1%)
+  sources whose text names a date later than close + 1 day: 714 (16.7%)
+    of which undated: 286 ; dated: 428
+packets with at least one undated source: 308 of 430 (71.6%)
+packets with a source naming a date after close + 1 day: 275 (64.0%)
+packets with a source naming a date in 2026 or later: 220 (51.2%)
+  Haiku full-text accuracy by 'later': {False: (155, np.float64(87.1)), True: (275, np.float64(82.5))}
+  Haiku full-text accuracy by 'y2026': {False: (210, np.float64(88.1)), True: (220, np.float64(80.5))}
+  note: a later date in the text is not always hindsight (forecast pages name future dates). Manual reading needed.
+cached packets with a retrieval timestamp: 486; months {'2026-02': 485, '2026-01': 1}; days from close to retrieval min 87 median 122 max 454

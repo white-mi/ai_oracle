@@ -1,0 +1,39 @@
+== 1. Round 1 -> round 2 transitions in B, by the agent's position relative to its two peers
+        model  peers_agreeing    n  flips  flip_rate  was_correct  correct_to_wrong  wrong_to_correct
+   GPT-5 nano               2 1002      7        0.7          804                 6                 1
+   GPT-5 nano               1  100     11       11.0           55                 7                 4
+   GPT-5 nano               0   87     24       27.6           35                13                11
+  DeepSeek V3               2 1002      0        0.0          804                 0                 0
+  DeepSeek V3               1  142      2        1.4           82                 0                 2
+  DeepSeek V3               0   45     10       22.2           20                 3                 7
+Llama 3.3 70B               2 1002      1        0.1          804                 0                 1
+Llama 3.3 70B               1  132      6        4.5           77                 6                 0
+Llama 3.3 70B               0   55     27       49.1           25                10                17
+
+all models:
+                    n  flips  correct_to_wrong  wrong_to_correct  was_correct  flip_rate_%
+peers_agreeing                                                                           
+0                187     61                26                35           80         32.6
+1                374     19                13                 6          214          5.1
+2               3006      8                 6                 2         2412          0.3
+lone dissenters: n=187, of them correct in round 1: 80 (43%); flips=61 (32.6%), of which correct->wrong 26, wrong->correct 35
+flip direction: YES->NO 71, NO->YES 17
+  GPT-5 nano     mean confidence change after seeing peers: unanimous rows +0.023, split rows +0.006
+  DeepSeek V3    mean confidence change after seeing peers: unanimous rows +0.000, split rows +0.004
+  Llama 3.3 70B  mean confidence change after seeing peers: unanimous rows +0.001, split rows +0.013
+
+== 2. Majority voting under correlated errors: one-factor (Gaussian copula) model fitted to file A
+mean single accuracy p=0.8190; mean pairwise error correlation (phi)=0.604
+P(both wrong) observed=0.1223 (independent would be 0.0328); latent (tetrachoric) correlation rho=0.845
+  N=    1: independent=0.8190   correlated model=0.8190
+  N=    3: independent=0.9136   correlated model=0.8298
+  N=    5: independent=0.9557   correlated model=0.8332
+  N=    9: independent=0.9872   correlated model=0.8358
+  N=   15: independent=0.9978   correlated model=0.8372
+  N=   31: independent=1.0000   correlated model=0.8383
+  N=  101: independent=1.0000   correlated model=0.8391
+  N= 1001: independent=1.0000   correlated model=0.8394
+  N->infinity limit under the model: P(z < Phi^-1(p)/sqrt(rho)) = 0.8394
+  observed 3-model majority (distinct rows) = 0.8274; model prediction for N=3 = 0.8298
+  share of rows where all three are wrong (irreducible by voting among these models) = 0.0971; at least two wrong = 0.1726
+  what correlation would be needed: rho=0.2: N=3 0.889, N=9 0.943, limit 0.979; rho=0.4: N=3 0.868, N=9 0.901, limit 0.925; rho=0.6: N=3 0.849, N=9 0.868, limit 0.880; rho=0.8: N=3 0.833, N=9 0.841, limit 0.846

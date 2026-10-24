@@ -1,0 +1,10 @@
+[rep1 sonnet45] 50/430 done, 0s, cost $1.57, errors 0
+[rep1 sonnet45] 100/430 done, 0s, cost $3.13, errors 0
+[rep1 sonnet45] 150/430 done, 69s, cost $4.64, errors 1
+[rep1 sonnet45] 200/430 done, 188s, cost $6.20, errors 1
+[rep1 sonnet45] 250/430 done, 315s, cost $7.80, errors 1
+[rep1 sonnet45] 300/430 done, 431s, cost $9.35, errors 1
+[rep1 sonnet45] 350/430 done, 546s, cost $10.92, errors 1
+[rep1 sonnet45] 400/430 done, 666s, cost $12.47, errors 1
+[rep1 sonnet45] 430/430 done, 737s, cost $13.43, errors 1
+rep1 sonnet45 n 430 acc 0.8047 answers {'NO': 293, 'YES': 136, nan: 1} cost 13.43 errors 1

@@ -1,0 +1,33 @@
+== Debate with a stronger peer (Haiku 4.5, Sonnet 4.5, GPT-5 nano), full text, Aug-Nov rows. errors 0, cost 5.73
+  haiku     disagree  n= 50 r1 72.0% r2 68.0%  flips 12 (c->w 7, w->c 5; YES->NO 11, NO->YES 1) p=0.77
+  haiku     unanimous n= 50 r1 76.0% r2 78.0%  flips 1 (c->w 0, w->c 1; YES->NO 1, NO->YES 0) p=1.00
+  sonnet45  disagree  n= 50 r1 44.0% r2 72.0%  flips 32 (c->w 9, w->c 23; YES->NO 23, NO->YES 9) p=0.02
+  sonnet45  unanimous n= 50 r1 76.0% r2 76.0%  flips 0 (c->w 0, w->c 0; YES->NO 0, NO->YES 0) p=1.00
+  all 340 Aug-Nov rows: Haiku r1               83.2%
+  all 340 Aug-Nov rows: Sonnet45 r1            79.1%
+  all 340 Aug-Nov rows: GPT-5 nano             79.7%
+  all 340 Aug-Nov rows: majority r1            82.1%
+  all 340 Aug-Nov rows: Haiku r2               82.9%
+  all 340 Aug-Nov rows: Sonnet45 r2            83.2%
+  all 340 Aug-Nov rows: majority after debate  82.9%
+  majority after - before: +0.88 pp [-0.87, +2.63], 6 vs 3, p=0.508
+  Sonnet45 after vs before: 23 vs 9, p=0.020
+
+== Split evidence: three Haiku agents, each sees a third of the sources. rows 430, calls 1290
+  agent 0: 80.5%
+  agent 1: 82.3%
+  agent 2: 79.3%
+  majority of the three split agents 81.9% vs one agent with the full packet 84.2%
+  McNemar split-majority vs full: 14 vs 24, p=0.143
+  error correlation between split agents:
+        split0  split1  split2
+split0    1.00    0.57    0.56
+split1    0.57    1.00    0.55
+split2    0.56    0.55    1.00
+  error correlation between repeated full-packet runs:
+           full_rep0  full_rep1  full_rep2
+full_rep0       1.00       0.87       0.82
+full_rep1       0.87       1.00       0.86
+full_rep2       0.82       0.86       1.00
+  unanimous split agents: 79.3% of rows, accuracy 88.0%; split: accuracy 58.4%
+  recall YES: split-majority 60.3% vs full 70.1%; recall NO 96.5% vs 93.8%

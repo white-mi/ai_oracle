@@ -1,0 +1,13 @@
+IN  truth=YES  paper=NO  packet=IMPLIES   haiku=YES  agent=YES          | Baltimore at Cleveland: First Touchdown Scorer: Cleveland D/
+IN  truth=YES  paper=NO  packet=SILENT    haiku=NO   agent=YES          | Will the national debt shrink at any point during the Trump 
+IN  truth=NO   paper=YES  packet=IMPLIES   haiku=YES  agent=NO           | Will the U.S. impose tariffs on pharmaceuticals from any cou
+IN  truth=YES  paper=NO  packet=SILENT    haiku=NO   agent=INSUFFICIENT | What will Joe Biden say during Ben Nelson Gala on November 7
+IN  truth=NO   paper=YES  packet=IMPLIES   haiku=YES  agent=INSUFFICIENT | Will there be more than 600 delays and cancellations at JFK 
+IN  truth=YES  paper=NO  packet=SILENT    haiku=NO   agent=YES          | What will OpenAI announce during its "12 Days of Shipmas"?
+IN  truth=NO   paper=YES  packet=SILENT    haiku=YES  agent=INSUFFICIENT | What will Eric Adams say during interview with Ziwe Fumudoh?
+IN  truth=YES  paper=NO  packet=SILENT    haiku=NO   agent=INSUFFICIENT | What will Taylor Swift say during New Heights Show?
+out truth=NO   paper=YES  packet=-         haiku=-    agent=-            | Will Monad conduct an airdrop before Nov 1, 2025?
+out truth=YES  paper=NO  packet=-         haiku=-    agent=-            | What lyrics will appear on The Life of a Showgirl?
+out truth=YES  paper=NO  packet=-         haiku=-    agent=-            | Top Netflix show on Nov 10, 2025?
+out truth=YES  paper=NO  packet=-         haiku=-    agent=-            | What will Pete Hegseth say during remarks at the National De
+in our 430: 8

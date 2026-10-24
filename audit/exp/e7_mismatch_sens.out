@@ -1,0 +1,18 @@
+== all 430: n=430, YES share 40.5%
+   text vs titles, prompt A: +7.2 pp (51 vs 20)
+   text vs titles, prompt B: +4.7 pp (41 vs 21)
+   prompt A vs B, text: +0.2 pp (13 vs 12)
+   Haiku HA 84.2% vs paper majority 81.6%; HA recall YES 70.1% vs TA 54.0%
+   closed-book Haiku acc 63.7%
+   gpt4o: A 79.1  B r1 74.4  diff +4.7
+   deepseek: A 81.6  B r1 76.0  diff +5.6
+   llama: A 78.8  B r1 75.8  diff +3.0
+== without 35 mismatched rows: n=395, YES share 41.5%
+   text vs titles, prompt A: +6.6 pp (44 vs 18)
+   text vs titles, prompt B: +3.8 pp (35 vs 20)
+   prompt A vs B, text: +0.3 pp (12 vs 11)
+   Haiku HA 84.1% vs paper majority 81.0%; HA recall YES 70.7% vs TA 55.5%
+   closed-book Haiku acc 63.5%
+   gpt4o: A 78.7  B r1 74.4  diff +4.3
+   deepseek: A 81.5  B r1 76.7  diff +4.8
+   llama: A 78.7  B r1 77.0  diff +1.8

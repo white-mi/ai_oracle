@@ -1,0 +1,29 @@
+== L1. Closed book by close month (Haiku 4.5)
+  2025-05: n= 24 acc  75.0%  majority-class  62.5%  AUC 0.75  mean p_yes | YES 0.52 | NO 0.20
+  2025-06: n= 21 acc  52.4%  majority-class  66.7%  AUC 0.44  mean p_yes | YES 0.40 | NO 0.43
+  2025-07: n= 45 acc  48.9%  majority-class  62.2%  AUC 0.53  mean p_yes | YES 0.40 | NO 0.34
+  2025-08: n= 22 acc  45.5%  majority-class  72.7%  AUC 0.57  mean p_yes | YES 0.42 | NO 0.36
+  2025-09: n= 68 acc  79.4%  majority-class  64.7%  AUC 0.78  mean p_yes | YES 0.61 | NO 0.23
+  2025-10: n= 58 acc  65.5%  majority-class  50.0%  AUC 0.67  mean p_yes | YES 0.58 | NO 0.35
+  2025-11: n=192 acc  63.0%  majority-class  68.2%  AUC 0.58  mean p_yes | YES 0.48 | NO 0.39
+  before Aug 2025 (inside training data): n=90 AUC 0.59, share of confident correct answers (p>0.9 & YES or p<0.1 & NO) 23.3%
+  Aug-Nov 2025 (after training data): n=340 AUC 0.65, share of confident correct answers (p>0.9 & YES or p<0.1 & NO) 23.5%
+
+== L2. Fixed-packet Haiku 4.5 (prompt A, full text) before vs after the training-data cutoff
+  before Aug 2025: Haiku 87.8% [79.4,93.0] (n=90), paper majority 82.2%, Haiku minus paper +5.6 pp
+  Aug-Nov 2025: Haiku 83.2% [78.9,86.8] (n=340), paper majority 81.5%, Haiku minus paper +1.8 pp
+
+== L3. Packets that do not contain the outcome (SILENT) with true YES: n=50
+  fixed-packet Haiku answers YES on 6 of 50 (if it remembered outcomes it would say YES here)
+  closed-book p_yes on these rows: mean 0.47, share > 0.5: 46%
+
+== L4. Agent with live search [haiku_clean] vs what Haiku knows without search
+ok                 agent not right  agent right
+cb_ok                                          
+closed-book right               12           66
+closed-book wrong               16           56
+  P(agent right | closed-book right) 0.78  vs  P(agent right | closed-book wrong) 0.85
+  shared false NO on fixed packets: 47; agent fixed 39. Closed-book p_yes on fixed ones: mean 0.53, >0.5 in 21 of 39
+  Aug-Nov 2025 markets only (after training data): sampled 117 (strata [('err', 72), ('cy', 23), ('cn', 22)], population {'err': 72, 'cy': 77, 'cn': 191})
+    agent accuracy 87.7% [79.6,94.1], INSUFFICIENT 8.4%, wrong 3.8%; fixed-packet Haiku on the same 340 rows 83.2% (wrong 16.8%)
+  groundedness: 453 of 464 cited URLs (98%) appear among the returned search results; runs without cited sources 0 of 150

@@ -1,0 +1,41 @@
+[E1 haiku rep0] 50/1720 done, 90s, cost $0.68, errors 0
+[E1 haiku rep0] 100/1720 done, 176s, cost $1.40, errors 0
+[E1 haiku rep0] 150/1720 done, 255s, cost $2.07, errors 0
+[E1 haiku rep0] 200/1720 done, 337s, cost $2.79, errors 0
+[E1 haiku rep0] 250/1720 done, 413s, cost $3.51, errors 0
+[E1 haiku rep0] 300/1720 done, 494s, cost $4.21, errors 0
+[E1 haiku rep0] 350/1720 done, 576s, cost $4.92, errors 0
+[E1 haiku rep0] 400/1720 done, 658s, cost $5.64, errors 0
+[E1 haiku rep0] 450/1720 done, 742s, cost $6.36, errors 0
+[E1 haiku rep0] 500/1720 done, 816s, cost $7.06, errors 0
+[E1 haiku rep0] 550/1720 done, 898s, cost $7.74, errors 0
+[E1 haiku rep0] 600/1720 done, 976s, cost $8.47, errors 0
+[E1 haiku rep0] 650/1720 done, 1061s, cost $9.18, errors 0
+[E1 haiku rep0] 700/1720 done, 1148s, cost $9.88, errors 0
+[E1 haiku rep0] 750/1720 done, 1232s, cost $10.59, errors 0
+[E1 haiku rep0] 800/1720 done, 1312s, cost $11.27, errors 0
+[E1 haiku rep0] 850/1720 done, 1391s, cost $12.00, errors 0
+[E1 haiku rep0] 900/1720 done, 1468s, cost $12.73, errors 0
+[E1 haiku rep0] 950/1720 done, 1546s, cost $13.47, errors 0
+[E1 haiku rep0] 1000/1720 done, 1625s, cost $14.19, errors 0
+[E1 haiku rep0] 1050/1720 done, 1703s, cost $14.89, errors 0
+[E1 haiku rep0] 1100/1720 done, 1786s, cost $15.58, errors 0
+[E1 haiku rep0] 1150/1720 done, 1853s, cost $16.32, errors 0
+[E1 haiku rep0] 1200/1720 done, 1937s, cost $17.01, errors 0
+[E1 haiku rep0] 1250/1720 done, 2016s, cost $17.70, errors 0
+[E1 haiku rep0] 1300/1720 done, 2097s, cost $18.41, errors 0
+[E1 haiku rep0] 1350/1720 done, 2175s, cost $19.13, errors 0
+[E1 haiku rep0] 1400/1720 done, 2255s, cost $19.93, errors 0
+[E1 haiku rep0] 1450/1720 done, 2340s, cost $20.60, errors 2
+[E1 haiku rep0] 1500/1720 done, 2428s, cost $21.31, errors 2
+[E1 haiku rep0] 1550/1720 done, 2507s, cost $22.01, errors 2
+[E1 haiku rep0] 1600/1720 done, 2585s, cost $22.72, errors 2
+[E1 haiku rep0] 1650/1720 done, 2661s, cost $23.43, errors 2
+[E1 haiku rep0] 1700/1720 done, 2743s, cost $24.16, errors 2
+[E1 haiku rep0] 1720/1720 done, 2773s, cost $24.45, errors 2
+        n    acc  yes_rate   conf  missing  in_tok   cost
+cond                                                     
+HA    430  0.842     0.321  0.845        1  7157.0  8.256
+HB    430  0.840     0.328  0.850        1  7140.0  8.683
+TA    430  0.770     0.263  0.630        0  2794.5  3.587
+TB    430  0.793     0.272  0.642        0  2775.0  3.922

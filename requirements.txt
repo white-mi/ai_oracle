@@ -1,0 +1,11 @@
+# Analysis, audit proofs, paper figures and oracle_lab (Python 3.11+, tested on 3.13)
+pandas>=2.2
+numpy>=2.0
+scipy>=1.13
+matplotlib>=3.9
+scikit-learn>=1.5
+requests>=2.32
+pydantic>=2    # imported by the paper's prompts.py, which audit/exp/common.py executes
+# network clients of oracle_lab, used only with API keys that have spend caps
+exa_py
+typesafe-sdk==0.7.2

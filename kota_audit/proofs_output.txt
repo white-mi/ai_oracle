@@ -1,0 +1,302 @@
+repository HEAD f76754b5bcff1a1d7a50c2f1073a4b6d44bd985c; expected f76754b5bcff1a1d7a50c2f1073a4b6d44bd985c; match: True
+
+====================================================================================================
+F1. Architecture B never received the text of any source
+====================================================================================================
+    src/resolution/debate/runner.py, lines 309-322:
+       309 |     def _format_exa_sources(sources: List[Source]) -> str:
+       310 |         if not sources:
+       311 |             return "No evidence sources were retrieved."
+       312 | 
+       313 |         lines: List[str] = []
+       314 |         for idx, source in enumerate(sources, start=1):
+       315 |             lines.append(f"--- Source {idx} ---")
+       316 |             lines.append(f"Title: {source.title}")
+       317 |             lines.append(f"URL: {source.url}")
+       318 |             if source.published_date:
+       319 |                 lines.append(f"Published: {source.published_date}")
+       320 |             lines.append(source.text)
+       321 |             lines.append("")
+       322 |         return "\n".join(lines)
+  - The debate formatter appends source.text (runner.py line 320). Round 1 (line 121) and round 2 (line 179) both build their evidence block with this formatter.
+    src/retrieval/evidence.py, lines 14-28:
+        14 |     url: str
+        15 |     published_date: Optional[str] = None
+        16 |     # Legacy: some packets store full extracted page text.
+        17 |     text: str = ""
+        18 |     # Preferred: Exa query-relevant highlights.
+        19 |     highlights: List[str] = field(default_factory=list)
+        20 |     
+        21 |     def __repr__(self) -> str:
+        22 |         title_preview = self.title[:50] + "..." if len(self.title) > 50 else self.title
+        23 |         return f"Source(title='{title_preview}', url='{self.url}')"
+        24 | 
+        25 |     def content_for_prompt(self) -> str:
+        26 |         if self.highlights:
+        27 |             return "\n".join(f"- {item}" for item in self.highlights)
+        28 |         return self.text
+  - Architecture A formats evidence with EvidencePacket.format_for_prompt (evidence.py line 109), which calls Source.content_for_prompt and returns the Exa highlights (lines 25-28).
+    src/retrieval/exa_retriever.py, lines 80-98:
+        80 |             results = self.exa.search(
+        81 |                 query=query,
+        82 |                 type="auto",
+        83 |                 num_results=num_results,
+        84 |                 end_published_date=end_date,
+        85 |                 contents={"highlights": highlights_contents},
+        86 |             )
+        87 |         else:  # pragma: no cover - protected by CLI choices
+        88 |             raise ValueError(f"Unsupported retrieval_mode: {retrieval_mode}")
+        89 |         
+        90 |         # Convert Exa results to Source objects
+        91 |         sources = []
+        92 |         for result in results.results:
+        93 |             source = Source(
+        94 |                 title=result.title,
+        95 |                 url=result.url,
+        96 |                 published_date=result.published_date if hasattr(result, "published_date") else None,
+        97 |                 text=result.text if hasattr(result, "text") and result.text else "",
+        98 |                 highlights=list(getattr(result, "highlights", None) or []),
+  - In highlights mode the Exa request asks for highlights only (exa_retriever.py line 85), and text is stored as an empty string when Exa returns none (line 97). Retrieval mode in the results files: {'A': {'highlights': 1189}, 'B': {'highlights': 1189}}.
+  - Committed cache: 4844 sources in 486 packets. source.text is empty for 4821. The 23 non-empty ones sit in 3 legacy packets that do not start with 'highlights__' (all legacy: True).
+
+    Evidence block of B round 1 for the paper's Glen Powell example (first 2 sources), produced by the authors' own _format_exa_sources:
+      | --- Source 1 ---
+      | Title: 'SNL' reveals latest hosts and musical guests for Season 51
+      | URL: https://www.usatoday.com/story/entertainment/tv/2025/10/17/snl-season-51-november-schedule-hosts-musical-guests/86749950007/
+      | Published: 2025-10-17T00:00:00.000Z
+      | 
+      | 
+      | --- Source 2 ---
+      | Title: SNL: Finn Wolfhard To Host First Episode Of 2026, With Musical Guest A$AP Rocky
+      | URL: https://tvline.com/lists/snl-season-51-hosts-list-saturday-night-live/
+      | Published: 2025-10-17T00:00:00.000Z
+  - Applied to highlights__row0089_KXSNLHOST_ddc2b51a4839.json, the packet A read for this contract (B read row0189_KXSNLHOST_f5982df4d591, which is not committed): the A evidence block has 15396 characters and mentions 'Powell' 10 times (1 in the criteria line, 1 in a title, 8 in the highlights of 6 sources). The B block has 2411 characters and mentions 'Powell' 1 times, in a title.
+  - Over all 458 highlights packets the median evidence block is 18449 characters for A and 2189 for B.
+  - B's own packet (named by B's row_uid) is committed for 100 of 1189 B rows. For these rows the empty text is observed directly. For the others the claim rests on the code path and on the retrieval_mode field of the results files.
+  - Every one of the 4 commits that touch src/resolution/debate/runner.py (ed7a36d, aaf565a, 51233b1, af93586) appends source.text in the formatter: True.
+  - Commit bbb53ef (2026-02-17 Default Exa retrieval to highlights for architectures A/B and add A/B comparison outputs) adds the highlights field and changes A's formatter in src/retrieval/evidence.py from source.text to content_for_prompt() (line removed: True, line added: True). It does not touch src/resolution/debate/runner.py (False). B's debate code was written in commit af93586 (2026-02-10), when the retriever had no highlights mode ('highlights' in exa_retriever.py then: False) and filled source.text.
+  - The unit test that covers the formatter builds its source with text="text" (tests/test_debate_runner.py line 49), so it passes although real packets carry their content in highlights.
+
+====================================================================================================
+F2. The published B answers quote titles, almost never source text
+====================================================================================================
+  - A: GPT-5 nano 3/19 from source text (15.8%), 1 from titles; DeepSeek V3 48/142 from source text (33.8%), 7 from titles; Llama 3.3 70B 17/40 from source text (42.5%), 3 from titles
+  - B round 1: GPT-5 nano 0/32 from source text (0.0%), 16 from titles; DeepSeek V3 2/128 from source text (1.6%), 40 from titles; Llama 3.3 70B 1/107 from source text (0.9%), 18 from titles
+  - B round 2: GPT-5 nano 0/29 from source text (0.0%), 7 from titles; DeepSeek V3 1/112 from source text (0.9%), 8 from titles; Llama 3.3 70B 0/97 from source text (0.0%), 1 from titles
+  - Reasoning texts that say the source content is missing (pattern search, no manual coding): B round 1 66 of 3567 (GPT-5 nano 6, DeepSeek V3 55, Llama 3.3 70B 5), A 0 of 3567.
+  - Example, B row0317_KXMARATHON_8648f52e2447, gpt4o_round1_reasoning: '...rovided evidence: - Source 1: Runner’s World article titled “Results from the 2025 New York City Marathon” (published 2025-11-02) could confirm the winner, but the content is not shown here, so we cannot extract a definitive statement that Yemane Hai...'
+  - Example, B row0630_KXAWARDSCOUNTWHI_951619a4f8a9, deepseek_round1_reasoning: '...most relevant as it directly reports on the 2025 Emmy Awards results for 'The White Lotus'. However, the URL and title suggest it might contain the answer, but since the content is not provided, I must infer from available metadata. Sources 2-10 are...'
+  - Example, B row0939_KXHURCTOTMAJ_83171b545677, deepseek_round1_reasoning: '...records of actual events. Source 10, titled '2025 Atlantic hurricane season marked by striking contrasts,' suggests the season has concluded or been analyzed, but the content is not provided to confirm actual hurricane counts. Source 8, 'NHC Verific...'
+  - Rows used: 100 questions where A and B have the same cache key and the packet file is committed. A quote is a quoted string of 5 or more words, normalised, matched against question and criteria first, then titles, then highlights.
+
+====================================================================================================
+F3. The A-B gap exists before any agent sees another agent's answer
+====================================================================================================
+  - A majority 986/1189 (82.93%), A weighted 992/1189 (83.43%), B round-1 majority 911/1189 (76.62%), B final 905/1189 (76.11%).
+  - GPT-5 nano: A 979 (82.34%), B round 1 894 (75.19%), B round 2 884 (74.35%).
+  - DeepSeek V3: A 980 (82.42%), B round 1 906 (76.20%), B round 2 912 (76.70%).
+  - Llama 3.3 70B: A 966 (81.24%), B round 1 906 (76.20%), B round 2 908 (76.37%).
+  - From B round-1 majority to B final: 10 correct answers became wrong, 4 wrong became correct, exact McNemar p = 0.180.
+  - Agent-level revisions: 88 of 3567 agent-round pairs on 83 questions; correct to wrong 45, wrong to correct 43. Per model GPT-5 nano 26/16, DeepSeek V3 3/9, Llama 3.3 70B 16/18 (paper, Section 4.4.5: 88 revisions on 83 questions, 45 and 43, GPT 26/16, DeepSeek 3/9).
+  - Totals over each file's 1,189 rows: of the net gap of 81 correct answers between A majority and B final, 75 is present after round 1 of B and 6 arises in the debate round. These are differences of totals over different row sets (see F9).
+  - Paired on the 1153 contracts in both files: A majority 954, B round-1 majority 884, B final 878. Net gap 76, of which 70 is present after round 1.
+
+====================================================================================================
+F4. Round 1 of B uses a different system prompt, a different user template and no resolution date
+====================================================================================================
+  - System prompts identical: False. User templates identical: False.
+  - The B round-1 user template has the placeholders ['criteria', 'exa_evidence', 'question'], so it carries no resolution date. A's evidence block contains 'Resolution Date:' (evidence.py line 97).
+    src/resolution/debate/runner.py, lines 121-126:
+       121 |         exa_evidence = self._format_exa_sources(evidence.sources)
+       122 |         user_prompt = ROUND_1_USER_TEMPLATE.format(
+       123 |             question=evidence.question_text,
+       124 |             criteria=evidence.resolution_criteria,
+       125 |             exa_evidence=exa_evidence,
+       126 |         )
+
+====================================================================================================
+F5. The evidence cache key contains the row number, and A and B numbered rows differently
+====================================================================================================
+    scripts/test_architecture_a.py, lines 118-118:
+       118 |     return f"row{row_number:04d}_{question.id}_{digest}"
+    scripts/test_architecture_a.py, lines 159-159:
+       159 |     cache_key = f"{retrieval_mode}__{row_uid}"
+    scripts/test_architecture_b.py, lines 164-164:
+       164 |     return f"row{row_number:04d}_{question.id}_{digest}"
+    scripts/test_architecture_b.py, lines 216-216:
+       216 |     cache_key = f"{retrieval_mode}__{row_uid}"
+  - Row numbers in file order: A restarts its numbering 4 times (rows 96-105 are [96, 97, 98, 99, 100, 1, 2, 3, 4, 5]) and repeats one number up to 5 times. B restarts 0 times and numbers 1 to 1189.
+  - Contracts present in both files: 1153. Different row_uid, hence different cache key: 315 (27%).
+  - Statements 'Source k (Month Year)' in B round-1 answers, checked against A's committed packet: same key 54 consistent and 0 inconsistent; different key 82 consistent and 57 inconsistent, on 28 questions.
+  - The paper's Glen Powell example is 'Row 0189' (Section 4.4.1). In A that contract is row0089_KXSNLHOST_ddc2b51a4839, in B it is row0189_KXSNLHOST_f5982df4d591.
+
+====================================================================================================
+F6. Two of the four failure-mode examples were answered correctly by all three models in Architecture A
+====================================================================================================
+  - 4.4.1 Retrieval failure: truth YES. A (GPT, DeepSeek, Llama) ['YES', 'YES', 'YES']; B round 1 ['NO', 'NO', 'NO']; B round 2 ['NO', 'NO', 'NO']. A read row0089_KXSNLHOST_ddc2b51a4839, B read row0189_KXSNLHOST_f5982df4d591: different packet. B's packet committed: False.
+  - 4.4.2 Temporal reasoning error: truth YES. A (GPT, DeepSeek, Llama) ['YES', 'NO', 'NO']; B round 1 ['YES', 'NO', 'NO']; B round 2 ['NO', 'NO', 'NO']. A read row0726_KXINXMAXY_e42bb9a981b1, B read row0726_KXINXMAXY_e42bb9a981b1: same packet. B's packet committed: False.
+  - 4.4.3 Hallucination: truth YES. A (GPT, DeepSeek, Llama) ['NO', 'NO', 'YES']; B round 1 ['NO', 'NO', 'NO']; B round 2 ['NO', 'NO', 'NO']. A read row0719_KXLYRICNEWSWIFT_a255a1e28b89, B read row0719_KXLYRICNEWSWIFT_a255a1e28b89: same packet. B's packet committed: False.
+  - 4.4.4 Shared bias: truth YES. A (GPT, DeepSeek, Llama) ['YES', 'YES', 'YES']; B round 1 ['NO', 'NO', 'NO']; B round 2 ['NO', 'NO', 'NO']. A read row0082_KXMEDICAIDCUTS_2ab1eb012fb9, B read row0382_KXMEDICAIDCUTS_391791d184d7: different packet. B's packet committed: False.
+  - A's packet for the Glen Powell contract names Powell in the highlights of sources [1, 2, 3, 4, 5, 6] (6 of 10). The paper says none of the ten sources mentioned him.
+  - The reasoning the paper quotes, 'forecasts do not count as evidence of an actual crossing', occurs in A's reasoning columns [] and in B's ['gpt4o_round2_reasoning'].
+  - The reasoning the paper quotes, 'person/entity named', occurs in A's reasoning columns [] and in B's ['gpt4o_round1_reasoning'].
+  - The 5 scripts scripts/error_analysis/export_architecture_b_*.py (retrieval failures, temporal failures, temporal conflicts, hallucinations, shared bias) read results/Final_Architecture_B_results.csv by default. export_failure_cases.py reads both, with A from the older results/architecture_a_results.csv.
+
+====================================================================================================
+F7. The search query contains the question text only, not the contract named in the criteria
+====================================================================================================
+    src/retrieval/exa_retriever.py, lines 35-40:
+        35 |     def question_to_query(question: str) -> str:
+        36 |         """
+        37 |         Convert prediction market question to Exa search query.
+        38 |         """
+        39 |         question_clean = question.strip().rstrip("?")
+        40 |         return f'What is the result of this question "{question_clean}"'
+  - Among 1153 distinct contracts in A, 502 share their question text with another contract that differs only in the criteria, so both get the same query. Recall on YES outcomes: 56.8% for those (169 YES contracts) against 73.2% for the rest (306), Fisher exact p = 0.0003.
+  - The query for the Glen Powell contract is built from 'Who will host Saturday Night Live Season 51?' and does not name Glen Powell.
+
+====================================================================================================
+F8. The evidence was retrieved months later and includes settled market pages
+====================================================================================================
+    src/retrieval/exa_retriever.py, lines 58-60:
+        58 |         # Add one day to resolution_date for publication date filtering
+        59 |         resolution_dt = datetime.fromisoformat(self._normalize_iso8601(resolution_date))
+        60 |         end_date = (resolution_dt + timedelta(days=1)).isoformat().replace('+00:00', 'Z')
+  - The filter is Exa's end_published_date, one day after the resolution date (exa_retriever.py lines 58-60, passed at lines 67 and 84). It bounds the publication date Exa reports, not the page content.
+  - Retrieval month of the 486 committed packets: {'2026-02': 485, '2026-01': 1}. For the 458 highlights packets the retrieval came 95-297 days after the date passed as resolution date (median 122).
+  - 957 of 4571 sources (20.9%) have no publication date, in 330 of 458 packets. The date filter cannot apply to them.
+  - 95 of 458 packets (21%) contain a prediction-market or betting page: {'metaculus.com': 11, 'fanduel': 32, 'kalshi.com': 68, 'polymarket.com': 52, 'sportsbook': 12, 'oddsshark': 3, 'predictit.org': 2, 'covers.com': 4, 'draftkings': 9, 'manifold.markets': 1}.
+  - 34 sources in 16 packets are market pages whose highlights state 'Final outcome: ...'. Examples:
+      highlights__row0004_KXAIRDROPMONAD_8ecbc7d6c53f.json
+        https://polymarket.com/event/monad-airdrop-by/will-monad-perform-an-airdrop-by-september-30
+        published_date=2025-06-26T00:00:00.000Z  highlight: Final outcome: No
+      highlights__row0007_KXROMANIATOP_e3321e635fbc.json
+        https://polymarket.com/event/romania-presidential-election-1st-round-winner/will-nicolae-ciuc-win-the-most-votes-in-the-1st-round-of-the-romanian-presidential-election
+        published_date=2024-12-11T00:00:00.000Z  highlight: Final outcome: No
+      highlights__row0008_KXFOMCVOTE_05161dca5c28.json
+        https://base.polymarket.com/event/how-many-dissent-at-the-next-fed-meeting-526/will-three-people-dissent-the-september-fed-decision
+        published_date=2024-12-18T00:00:00.000Z  highlight: Final outcome: No
+      highlights__row0008_KXFOMCVOTE_05161dca5c28.json
+        https://polymarket.com/event/fed-decision-dissent-combo-in-december
+        published_date=2024-12-18T00:00:00.000Z  highlight: Final outcome: No
+      highlights__row0010_KXETHD_268c741ddcd8.json
+        https://polymarket.com/event/ethereum-up-or-down-november-26-1pm-et
+        published_date=2025-06-09T00:00:00.000Z  highlight: Final outcome: Up
+      highlights__row0010_KXETHD_268c741ddcd8.json
+        https://polymarket.com/event/ethereum-up-or-down-november-26-2pm-et/ethereum-up-or-down-november-26-2pm-et
+        published_date=2025-06-09T00:00:00.000Z  highlight: Final outcome: Down
+  - 'Will Monad conduct an airdrop before Oct 1, 2025?' (truth NO, A majority YES, resolution_date 2025-10-01, retrieved 2026-02-21). The packet includes https://polymarket.com/event/monad-airdrop-by/will-monad-perform-an-airdrop-by-september-30 with published_date 2025-06-26, whose highlights contain ['Final outcome: No', 'November 30']. It lists the November 25 and November 30 date markets with the outcome Yes, content written after the resolution date.
+  - 'Will Nicolás Maduro leave office next in this set?' (truth NO, A majority NO, resolution_date 2025-10-11, retrieved 2026-02-21). The packet includes https://polymarket.com/event/maduro-out-in-2025/maduro-out-by-february-28-2026 with published_date 2024-06-12, whose highlights contain ['Final outcome: Yes']. It is the market 'Maduro out by February 28, 2026' shown as settled Yes, content written after the resolution date.
+  - 'Will Nicolae Ciuca be 1st in the next Romanian presidential election first round?' (truth NO, A majority NO, resolution_date 2025-05-08, retrieved 2026-02-21). The packet includes https://polymarket.com/event/romania-presidential-election-1st-round-winner/will-nicolae-ciuc-win-the-most-votes-in-the-1st-round-of-the-romanian-presidential-election with published_date 2024-12-11, whose highlights contain ['Final outcome: No', 'George Simion100.0%']. It shows the May 2025 first round as decided (Simion at 100%). The round took place before the resolution date, so this is resolution-time information, but it was written five months after the reported publication date.
+  - highlights__row0007_KXROMANIATOP_e3321e635fbc.json carries the same Ciuca page; this packet belongs to no row of A (False) or B (False).
+  - 15 of these 16 packets belong to rows in the A results. A's majority matches the truth on 11 of 15, so these pages are a contamination of the evidence, not a measured gain in accuracy.
+
+====================================================================================================
+F9. Row identity: duplicates in A, rows missing from A, and an id that is a series ticker
+====================================================================================================
+  - Rows: A 1189, B 1189, evaluation CSV 1189. Distinct contracts (id + question + criteria): A 1153, B 1188, evaluation 1188.
+  - Multiset difference against the evaluation CSV: A has 35 rows not in the evaluation set and lacks 35 of its rows. B: 0 and 0.
+  - id equals series_ticker in 1189 of 1189 evaluation rows; distinct ids 703; ids with exactly 2 rows 486, with more than 2 rows 0.
+
+====================================================================================================
+F10. Pairing of A and B in the analysis script joins different contracts
+====================================================================================================
+    scripts/analyze_architecture_results.py, lines 136-147:
+       136 |     a2 = a.copy()
+       137 |     b2 = b.copy()
+       138 |     key_cols = ["question_text", "ground_truth"]
+       139 |     a2["_match_key"] = a2[key_cols].astype(str).agg("||".join, axis=1)
+       140 |     b2["_match_key"] = b2[key_cols].astype(str).agg("||".join, axis=1)
+       141 |     a2["_occ"] = a2.groupby("_match_key").cumcount()
+       142 |     b2["_occ"] = b2.groupby("_match_key").cumcount()
+       143 | 
+       144 |     keep_a = ["_match_key", "_occ", "category", "ground_truth", "final_decision", "weighted_final", "a_disagree"]
+       145 |     keep_b = ["_match_key", "_occ", "final_decision", "round1_yes_votes", "round1_no_votes", "round2_yes_votes", "round2_no_votes"]
+       146 |     merged = a2[keep_a].merge(b2[keep_b], on=["_match_key", "_occ"], how="inner", suffixes=("_a", "_b"))
+       147 |     return merged
+  - The script's pairing gives 1170 pairs; in 16 of them the resolution criteria differ.
+  - Pairing by contract identity: 1153 pairs, A maj only 113, B only 37, exact McNemar p = 3.8e-10. The direction and significance of Table 4 hold.
+  - Pairing by contract identity: 1153 pairs, A wtd only 119, B only 37, exact McNemar p = 3.1e-11. The direction and significance of Table 4 hold.
+
+====================================================================================================
+F11. Numbers in the paper checked against the published files
+====================================================================================================
+    Table 3      GPT-5 nano (labelled GPT-4o)                                             paper           82.34  files           82.34  reproduces
+    Table 3      DeepSeek                                                                 paper           82.42  files           82.42  reproduces
+    Table 3      Llama                                                                    paper           81.24  files           81.24  reproduces
+    Table 3      A majority                                                               paper           82.93  files           82.93  reproduces
+    Table 3      A confidence-weighted                                                    paper           83.43  files           83.43  reproduces
+    Table 3      B final-round GPT                                                        paper           74.35  files           74.35  reproduces
+    Table 3      B final-round DeepSeek                                                   paper            76.7  files            76.7  reproduces
+    Table 3      B final-round Llama                                                      paper           76.37  files           76.37  reproduces
+    Table 3      B deliberative final                                                     paper           76.11  files           76.11  reproduces
+    Table 5      A vs B: both / A only / B only / both wrong                              paper  852/117/37/164  files  852/117/37/164  reproduces
+    Table 6      A all correct / mixed / all wrong                                        paper       380/67/39  files       380/67/39  reproduces
+    Table 6      B all correct / mixed / all wrong                                        paper       338/90/58  files       338/90/58  reproduces
+    Table 8      r(GPT, DeepSeek)                                                         paper            0.58  files            0.58  reproduces
+    Table 8      r(GPT, Llama)                                                            paper           0.529  files            0.53  reproduces
+    Table 8      r(DeepSeek, Llama)                                                       paper           0.689  files            0.69  reproduces
+    Table 9      P(DeepSeek wrong | GPT wrong)                                            paper           0.652  files            0.65  reproduces
+    Table 9      P(Llama wrong | GPT wrong)                                               paper           0.633  files            0.63  reproduces
+    Table 9      P(Llama wrong | DeepSeek wrong)                                          paper            0.77  files            0.77  reproduces
+    Table 9      P(DeepSeek wrong | Llama wrong)                                          paper           0.722  files            0.72  reproduces
+    Section 4.3  text: 63.3% 'for GPT-4o when Llama errs' = P(GPT wrong | Llama wrong)    paper           0.633  files             0.6  DIFFERS
+    Table 4      A majority vs A weighted: 1/7, exact McNemar p                           paper            0.07  files            0.07  reproduces
+    Table 4      A majority vs B: 117/37, exact McNemar p                                 paper         7.2e-11  files         7.2e-11  reproduces
+    Table 4      A weighted vs B: 123/37, exact McNemar p                                 paper         5.5e-12  files         5.5e-12  reproduces
+    Table 10     round-1 consensus n                                                      paper            1002  files            1002  reproduces
+    Table 10     round-1 consensus accuracy                                               paper           80.24  files           80.24  reproduces
+    Table 10     round-2 consensus n                                                      paper              58  files              58  reproduces
+    Table 10     round-2 consensus accuracy                                               paper            56.9  files            56.9  reproduces
+    Table 10     no consensus n                                                           paper             129  files             129  reproduces
+    Table 10     no consensus accuracy                                                    paper           52.71  files           52.71  reproduces
+    Figure 5     net revisions GPT-5 nano                                                 paper             -10  files             -10  reproduces
+    Figure 5     net revisions DeepSeek V3                                                paper               6  files               6  reproduces
+    Table 11     unanimous n                                                              paper             978  files             978  reproduces
+    Table 11     unanimous accuracy                                                       paper           88.34  files           88.34  reproduces
+    Table 11     split accuracy                                                           paper           57.82  files           57.82  reproduces
+    Table 12     median average confidence                                                paper            0.91  files            0.91  reproduces
+    Table 12     unanimous, high: n                                                       paper             563  files             563  reproduces
+    Table 12     unanimous, high: accuracy                                                paper           97.87  files           97.87  reproduces
+    Section 4.5  A at 10% coverage (text says 100% and, one paragraph later, 99.15%)      paper     100 / 99.15  files          100.00  inconsistent in text
+    Section 4.5  B better than A at the top of the ranking (text: 100% vs 99.15% at 10%)  paper           B > A  files B>A at 0 of 1,189 prefixes; at 10% A 100%, B 100%  DIFFERS
+    Section 4.5  A at 50% coverage                                                        paper           97.47  files           97.47  reproduces
+    Section 4.5  A at 75% coverage                                                        paper           90.12  files           90.12  reproduces
+    Section 4.5  gap A - B at 50% coverage                                                paper           10.44  files           10.44  reproduces
+    Table 12     unanimous, low: n                                                        paper             415  files             415  reproduces
+    Table 12     unanimous, low: accuracy                                                 paper           75.42  files           75.42  reproduces
+    Table 12     split, high: n                                                           paper              46  files              46  reproduces
+    Table 12     split, high: accuracy                                                    paper           56.52  files           56.52  reproduces
+    Table 12     split, low: n                                                            paper             165  files             165  reproduces
+    Table 12     split, low: accuracy                                                     paper           58.18  files           58.18  reproduces
+    Section 4.5  coverage of unanimous high-confidence rows                               paper            47.4  files           47.35  reproduces
+    Section 4.5  coverage of all unanimous rows                                           paper            82.3  files           82.25  reproduces
+  - 47 of 50 checked values reproduce to the reported precision (tolerance 0.051 points for percentages, 0.0006 for correlations and probabilities, 5% relative for p-values, exact for counts).
+  - Table 5 is captioned confidence-weighted. Its counts equal A's majority vote (852/117/37/164); the weighted vote gives 852/123/37/158.
+  - The 99.15% of Section 4.5 is probably B at 20% coverage: 99.156% in comparison_summary.json.
+
+====================================================================================================
+F12. Table 7, the unique-market result and the model label
+====================================================================================================
+  - Table 7 'Best Baseline' for Politics: paper 76.2. Per model: GPT-5 nano 76.2, DeepSeek V3 78.8, Llama 3.3 70B 79.1. The paper's value equals GPT-5 nano's.
+  - Table 7 'Best Baseline' for Economics: paper 57.1. Per model: GPT-5 nano 57.1, DeepSeek V3 76.2, Llama 3.3 70B 76.2. The paper's value equals GPT-5 nano's.
+  - Table 7 'Best Baseline' for Social: paper 76.9. Per model: GPT-5 nano 76.9, DeepSeek V3 100.0, Llama 3.3 70B 84.6. The paper's value equals GPT-5 nano's.
+  - Table 7 'Best Baseline' for Health: paper 50.0. Per model: GPT-5 nano 50.0, DeepSeek V3 100.0, Llama 3.3 70B 100.0. The paper's value equals GPT-5 nano's.
+  - Table 7 'Best Baseline' for Mentions: paper 76.9. Per model: GPT-5 nano 76.9, DeepSeek V3 78.8, Llama 3.3 70B 71.2. The paper's value equals GPT-5 nano's.
+  - Table 7 'Best Baseline' for Science and Technology: paper 40.0. Per model: GPT-5 nano 40.0, DeepSeek V3 60.0, Llama 3.3 70B 60.0. The paper's value equals GPT-5 nano's.
+  - Table 7 'Best Baseline' for Financials: paper 90.0. Per model: GPT-5 nano 90.0, DeepSeek V3 93.3, Llama 3.3 70B 90.0. The paper's value equals GPT-5 nano's.
+  - Politics: A weighted 79.4% against the best single model 79.1% (Llama), a gap of 0.3 points; the paper reports 3.2 points (79.4% vs 76.2%).
+  - Unique-market accuracy (first row per id), A final: 576/703 = 81.9% [Wilson 0.789, 0.846]. Paper: A 81.9% [0.789, 0.846], B 75.5% [0.722, 0.786].
+  - Unique-market accuracy (first row per id), B final: 520/703 = 74.0% [Wilson 0.706, 0.771]. Paper: A 81.9% [0.789, 0.846], B 75.5% [0.722, 0.786].
+  - Unique-market accuracy (first row per id), B DeepSeek round 2: 531/703 = 75.5% [Wilson 0.722, 0.786]. Paper: A 81.9% [0.789, 0.846], B 75.5% [0.722, 0.786].
+  - scripts/analysis_by_market_instance.py chooses the decision column with the highest accuracy (lines 87 and 272) and writes it to summary_comparison.md as 'Best-performing decision column' (line 306). On unique markets of A that column is final_decision (81.9%).
+  - scripts/analysis_by_market_instance.py chooses the decision column with the highest accuracy (lines 87 and 272) and writes it to summary_comparison.md as 'Best-performing decision column' (line 306). On unique markets of B that column is deepseek_round2_decision (75.5%).
+    src/agents/openai_agent.py, lines 66-68:
+        66 |                 # GPT-5 nano rejects temperature=0.0; keep deterministic temp for older models.
+        67 |                 if not self.MODEL_ID.startswith("gpt-5"):
+        68 |                     request_kwargs["temperature"] = 0.0
+  - Temperature 0 is set only for models whose id does not start with gpt-5 (openai_agent.py lines 66-68), so GPT-5 nano runs at its default temperature.
+  - src/agents/openai_agent.py sets MODEL_ID = 'gpt-5-nano': True. Tables 3, 8 and 9 and Sections 4.3 and 4.4.5 call this model GPT-4o; the result columns are named gpt4o_*.
+  - The confidence threshold of Table 12 is the median of the same 1,189 rows (0.91), so the 97.87% is measured on the rows that set the threshold.
+
+wrote findings.json

@@ -1,0 +1,1307 @@
+{
+ "F1": {
+  "title": "Architecture B never received the text of any source",
+  "facts": [
+   {
+    "text": "The debate formatter appends source.text (runner.py line 320). Round 1 (line 121) and round 2 (line 179) both build their evidence block with this formatter."
+   },
+   {
+    "text": "Architecture A formats evidence with EvidencePacket.format_for_prompt (evidence.py line 109), which calls Source.content_for_prompt and returns the Exa highlights (lines 25-28)."
+   },
+   {
+    "text": "In highlights mode the Exa request asks for highlights only (exa_retriever.py line 85), and text is stored as an empty string when Exa returns none (line 97). Retrieval mode in the results files: {'A': {'highlights': 1189}, 'B': {'highlights': 1189}}.",
+    "modes": {
+     "A": {
+      "highlights": 1189
+     },
+     "B": {
+      "highlights": 1189
+     }
+    }
+   },
+   {
+    "text": "Committed cache: 4844 sources in 486 packets. source.text is empty for 4821. The 23 non-empty ones sit in 3 legacy packets that do not start with 'highlights__' (all legacy: True).",
+    "n_sources": 4844,
+    "n_empty_text": 4821
+   },
+   {
+    "text": "Applied to highlights__row0089_KXSNLHOST_ddc2b51a4839.json, the packet A read for this contract (B read row0189_KXSNLHOST_f5982df4d591, which is not committed): the A evidence block has 15396 characters and mentions 'Powell' 10 times (1 in the criteria line, 1 in a title, 8 in the highlights of 6 sources). The B block has 2411 characters and mentions 'Powell' 1 times, in a title.",
+    "a_chars": 15396,
+    "b_chars": 2411,
+    "a_powell": 10,
+    "b_powell": 1,
+    "a_powell_highlight_sources": 6
+   },
+   {
+    "text": "Over all 458 highlights packets the median evidence block is 18449 characters for A and 2189 for B.",
+    "median_chars_a": 18449,
+    "median_chars_b": 2189
+   },
+   {
+    "text": "B's own packet (named by B's row_uid) is committed for 100 of 1189 B rows. For these rows the empty text is observed directly. For the others the claim rests on the code path and on the retrieval_mode field of the results files.",
+    "b_rows_with_own_packet": 100
+   },
+   {
+    "text": "Every one of the 4 commits that touch src/resolution/debate/runner.py (ed7a36d, aaf565a, 51233b1, af93586) appends source.text in the formatter: True.",
+    "runner_commits": [
+     "ed7a36d",
+     "aaf565a",
+     "51233b1",
+     "af93586"
+    ]
+   },
+   {
+    "text": "Commit bbb53ef (2026-02-17 Default Exa retrieval to highlights for architectures A/B and add A/B comparison outputs) adds the highlights field and changes A's formatter in src/retrieval/evidence.py from source.text to content_for_prompt() (line removed: True, line added: True). It does not touch src/resolution/debate/runner.py (False). B's debate code was written in commit af93586 (2026-02-10), when the retriever had no highlights mode ('highlights' in exa_retriever.py then: False) and filled source.text.",
+    "switch_commit": "bbb53efd80775069e198eb9824b871af94f9e4a7",
+    "switch_touches_runner": false
+   },
+   {
+    "text": "The unit test that covers the formatter builds its source with text=\"text\" (tests/test_debate_runner.py line 49), so it passes although real packets carry their content in highlights."
+   }
+  ]
+ },
+ "F2": {
+  "title": "The published B answers quote titles, almost never source text",
+  "facts": [
+   {
+    "text": "A: GPT-5 nano 3/19 from source text (15.8%), 1 from titles; DeepSeek V3 48/142 from source text (33.8%), 7 from titles; Llama 3.3 70B 17/40 from source text (42.5%), 3 from titles"
+   },
+   {
+    "text": "B round 1: GPT-5 nano 0/32 from source text (0.0%), 16 from titles; DeepSeek V3 2/128 from source text (1.6%), 40 from titles; Llama 3.3 70B 1/107 from source text (0.9%), 18 from titles"
+   },
+   {
+    "text": "B round 2: GPT-5 nano 0/29 from source text (0.0%), 7 from titles; DeepSeek V3 1/112 from source text (0.9%), 8 from titles; Llama 3.3 70B 0/97 from source text (0.0%), 1 from titles"
+   },
+   {
+    "text": "Reasoning texts that say the source content is missing (pattern search, no manual coding): B round 1 66 of 3567 (GPT-5 nano 6, DeepSeek V3 55, Llama 3.3 70B 5), A 0 of 3567.",
+    "b_round1_missing": {
+     "gpt4o": 6,
+     "deepseek": 55,
+     "llama": 5
+    },
+    "a_missing": {
+     "gpt4o": 0,
+     "deepseek": 0,
+     "llama": 0
+    }
+   },
+   {
+    "text": "Example, B row0317_KXMARATHON_8648f52e2447, gpt4o_round1_reasoning: '...rovided evidence: - Source 1: Runner\u2019s World article titled \u201cResults from the 2025 New York City Marathon\u201d (published 2025-11-02) could confirm the winner, but the content is not shown here, so we cannot extract a definitive statement that Yemane Hai...'"
+   },
+   {
+    "text": "Example, B row0630_KXAWARDSCOUNTWHI_951619a4f8a9, deepseek_round1_reasoning: '...most relevant as it directly reports on the 2025 Emmy Awards results for 'The White Lotus'. However, the URL and title suggest it might contain the answer, but since the content is not provided, I must infer from available metadata. Sources 2-10 are...'"
+   },
+   {
+    "text": "Example, B row0939_KXHURCTOTMAJ_83171b545677, deepseek_round1_reasoning: '...records of actual events. Source 10, titled '2025 Atlantic hurricane season marked by striking contrasts,' suggests the season has concluded or been analyzed, but the content is not provided to confirm actual hurricane counts. Source 8, 'NHC Verific...'"
+   },
+   {
+    "text": "Rows used: 100 questions where A and B have the same cache key and the packet file is committed. A quote is a quoted string of 5 or more words, normalised, matched against question and criteria first, then titles, then highlights.",
+    "n_rows": 100
+   }
+  ]
+ },
+ "F3": {
+  "title": "The A-B gap exists before any agent sees another agent's answer",
+  "facts": [
+   {
+    "text": "A majority 986/1189 (82.93%), A weighted 992/1189 (83.43%), B round-1 majority 911/1189 (76.62%), B final 905/1189 (76.11%).",
+    "a_majority": 986,
+    "a_weighted": 992,
+    "b_round1_majority": 911,
+    "b_final": 905
+   },
+   {
+    "text": "GPT-5 nano: A 979 (82.34%), B round 1 894 (75.19%), B round 2 884 (74.35%).",
+    "model": "gpt4o",
+    "a": 979,
+    "b1": 894,
+    "b2": 884
+   },
+   {
+    "text": "DeepSeek V3: A 980 (82.42%), B round 1 906 (76.20%), B round 2 912 (76.70%).",
+    "model": "deepseek",
+    "a": 980,
+    "b1": 906,
+    "b2": 912
+   },
+   {
+    "text": "Llama 3.3 70B: A 966 (81.24%), B round 1 906 (76.20%), B round 2 908 (76.37%).",
+    "model": "llama",
+    "a": 966,
+    "b1": 906,
+    "b2": 908
+   },
+   {
+    "text": "From B round-1 majority to B final: 10 correct answers became wrong, 4 wrong became correct, exact McNemar p = 0.180.",
+    "c2w": 10,
+    "w2c": 4
+   },
+   {
+    "text": "Agent-level revisions: 88 of 3567 agent-round pairs on 83 questions; correct to wrong 45, wrong to correct 43. Per model GPT-5 nano 26/16, DeepSeek V3 3/9, Llama 3.3 70B 16/18 (paper, Section 4.4.5: 88 revisions on 83 questions, 45 and 43, GPT 26/16, DeepSeek 3/9).",
+    "revisions": 88,
+    "questions": 83
+   },
+   {
+    "text": "Totals over each file's 1,189 rows: of the net gap of 81 correct answers between A majority and B final, 75 is present after round 1 of B and 6 arises in the debate round. These are differences of totals over different row sets (see F9).",
+    "gap_total": 81,
+    "gap_round1": 75
+   },
+   {
+    "text": "Paired on the 1153 contracts in both files: A majority 954, B round-1 majority 884, B final 878. Net gap 76, of which 70 is present after round 1.",
+    "paired_n": 1153,
+    "paired_a": 954,
+    "paired_b1": 884,
+    "paired_bf": 878
+   }
+  ]
+ },
+ "F4": {
+  "title": "Round 1 of B uses a different system prompt, a different user template and no resolution date",
+  "facts": [
+   {
+    "text": "System prompts identical: False. User templates identical: False."
+   },
+   {
+    "text": "The B round-1 user template has the placeholders ['criteria', 'exa_evidence', 'question'], so it carries no resolution date. A's evidence block contains 'Resolution Date:' (evidence.py line 97).",
+    "placeholders": [
+     "criteria",
+     "exa_evidence",
+     "question"
+    ]
+   }
+  ]
+ },
+ "F5": {
+  "title": "The evidence cache key contains the row number, and A and B numbered rows differently",
+  "facts": [
+   {
+    "text": "Row numbers in file order: A restarts its numbering 4 times (rows 96-105 are [96, 97, 98, 99, 100, 1, 2, 3, 4, 5]) and repeats one number up to 5 times. B restarts 0 times and numbers 1 to 1189.",
+    "resets_a": 4,
+    "resets_b": 0
+   },
+   {
+    "text": "Contracts present in both files: 1153. Different row_uid, hence different cache key: 315 (27%).",
+    "shared": 1153,
+    "different_key": 315
+   },
+   {
+    "text": "Statements 'Source k (Month Year)' in B round-1 answers, checked against A's committed packet: same key 54 consistent and 0 inconsistent; different key 82 consistent and 57 inconsistent, on 28 questions.",
+    "inconsistent_rows": 28
+   },
+   {
+    "text": "The paper's Glen Powell example is 'Row 0189' (Section 4.4.1). In A that contract is row0089_KXSNLHOST_ddc2b51a4839, in B it is row0189_KXSNLHOST_f5982df4d591."
+   }
+  ]
+ },
+ "F6": {
+  "title": "Two of the four failure-mode examples were answered correctly by all three models in Architecture A",
+  "facts": [
+   {
+    "text": "4.4.1 Retrieval failure: truth YES. A (GPT, DeepSeek, Llama) ['YES', 'YES', 'YES']; B round 1 ['NO', 'NO', 'NO']; B round 2 ['NO', 'NO', 'NO']. A read row0089_KXSNLHOST_ddc2b51a4839, B read row0189_KXSNLHOST_f5982df4d591: different packet. B's packet committed: False.",
+    "section": "4.4.1 Retrieval failure",
+    "a": [
+     "YES",
+     "YES",
+     "YES"
+    ],
+    "b1": [
+     "NO",
+     "NO",
+     "NO"
+    ],
+    "b2": [
+     "NO",
+     "NO",
+     "NO"
+    ],
+    "same_packet": false
+   },
+   {
+    "text": "4.4.2 Temporal reasoning error: truth YES. A (GPT, DeepSeek, Llama) ['YES', 'NO', 'NO']; B round 1 ['YES', 'NO', 'NO']; B round 2 ['NO', 'NO', 'NO']. A read row0726_KXINXMAXY_e42bb9a981b1, B read row0726_KXINXMAXY_e42bb9a981b1: same packet. B's packet committed: False.",
+    "section": "4.4.2 Temporal reasoning error",
+    "a": [
+     "YES",
+     "NO",
+     "NO"
+    ],
+    "b1": [
+     "YES",
+     "NO",
+     "NO"
+    ],
+    "b2": [
+     "NO",
+     "NO",
+     "NO"
+    ],
+    "same_packet": true
+   },
+   {
+    "text": "4.4.3 Hallucination: truth YES. A (GPT, DeepSeek, Llama) ['NO', 'NO', 'YES']; B round 1 ['NO', 'NO', 'NO']; B round 2 ['NO', 'NO', 'NO']. A read row0719_KXLYRICNEWSWIFT_a255a1e28b89, B read row0719_KXLYRICNEWSWIFT_a255a1e28b89: same packet. B's packet committed: False.",
+    "section": "4.4.3 Hallucination",
+    "a": [
+     "NO",
+     "NO",
+     "YES"
+    ],
+    "b1": [
+     "NO",
+     "NO",
+     "NO"
+    ],
+    "b2": [
+     "NO",
+     "NO",
+     "NO"
+    ],
+    "same_packet": true
+   },
+   {
+    "text": "4.4.4 Shared bias: truth YES. A (GPT, DeepSeek, Llama) ['YES', 'YES', 'YES']; B round 1 ['NO', 'NO', 'NO']; B round 2 ['NO', 'NO', 'NO']. A read row0082_KXMEDICAIDCUTS_2ab1eb012fb9, B read row0382_KXMEDICAIDCUTS_391791d184d7: different packet. B's packet committed: False.",
+    "section": "4.4.4 Shared bias",
+    "a": [
+     "YES",
+     "YES",
+     "YES"
+    ],
+    "b1": [
+     "NO",
+     "NO",
+     "NO"
+    ],
+    "b2": [
+     "NO",
+     "NO",
+     "NO"
+    ],
+    "same_packet": false
+   },
+   {
+    "text": "A's packet for the Glen Powell contract names Powell in the highlights of sources [1, 2, 3, 4, 5, 6] (6 of 10). The paper says none of the ten sources mentioned him."
+   },
+   {
+    "text": "The reasoning the paper quotes, 'forecasts do not count as evidence of an actual crossing', occurs in A's reasoning columns [] and in B's ['gpt4o_round2_reasoning']."
+   },
+   {
+    "text": "The reasoning the paper quotes, 'person/entity named', occurs in A's reasoning columns [] and in B's ['gpt4o_round1_reasoning']."
+   },
+   {
+    "text": "The 5 scripts scripts/error_analysis/export_architecture_b_*.py (retrieval failures, temporal failures, temporal conflicts, hallucinations, shared bias) read results/Final_Architecture_B_results.csv by default. export_failure_cases.py reads both, with A from the older results/architecture_a_results.csv.",
+    "b_scripts": [
+     "export_architecture_b_hallucinations.py",
+     "export_architecture_b_retrieval_failures.py",
+     "export_architecture_b_shared_bias.py",
+     "export_architecture_b_temporal_conflicts.py",
+     "export_architecture_b_temporal_failures.py"
+    ]
+   }
+  ]
+ },
+ "F7": {
+  "title": "The search query contains the question text only, not the contract named in the criteria",
+  "facts": [
+   {
+    "text": "Among 1153 distinct contracts in A, 502 share their question text with another contract that differs only in the criteria, so both get the same query. Recall on YES outcomes: 56.8% for those (169 YES contracts) against 73.2% for the rest (306), Fisher exact p = 0.0003.",
+    "shared": 502,
+    "recall_shared": 0.5680473372781065,
+    "recall_unique": 0.7320261437908496,
+    "fisher_p": 0.00033776748055848867
+   },
+   {
+    "text": "The query for the Glen Powell contract is built from 'Who will host Saturday Night Live Season 51?' and does not name Glen Powell."
+   }
+  ]
+ },
+ "F8": {
+  "title": "The evidence was retrieved months later and includes settled market pages",
+  "facts": [
+   {
+    "text": "The filter is Exa's end_published_date, one day after the resolution date (exa_retriever.py lines 58-60, passed at lines 67 and 84). It bounds the publication date Exa reports, not the page content."
+   },
+   {
+    "text": "Retrieval month of the 486 committed packets: {'2026-02': 485, '2026-01': 1}. For the 458 highlights packets the retrieval came 95-297 days after the date passed as resolution date (median 122).",
+    "lag_min": 95,
+    "lag_max": 297,
+    "lag_median": 121.5
+   },
+   {
+    "text": "957 of 4571 sources (20.9%) have no publication date, in 330 of 458 packets. The date filter cannot apply to them.",
+    "undated": 957,
+    "sources": 4571
+   },
+   {
+    "text": "95 of 458 packets (21%) contain a prediction-market or betting page: {'metaculus.com': 11, 'fanduel': 32, 'kalshi.com': 68, 'polymarket.com': 52, 'sportsbook': 12, 'oddsshark': 3, 'predictit.org': 2, 'covers.com': 4, 'draftkings': 9, 'manifold.markets': 1}.",
+    "packets_with_market_pages": 95
+   },
+   {
+    "text": "34 sources in 16 packets are market pages whose highlights state 'Final outcome: ...'. Examples:"
+   },
+   {
+    "text": "'Will Monad conduct an airdrop before Oct 1, 2025?' (truth NO, A majority YES, resolution_date 2025-10-01, retrieved 2026-02-21). The packet includes https://polymarket.com/event/monad-airdrop-by/will-monad-perform-an-airdrop-by-september-30 with published_date 2025-06-26, whose highlights contain ['Final outcome: No', 'November 30']. It lists the November 25 and November 30 date markets with the outcome Yes, content written after the resolution date.",
+    "row_uid": "row0004_KXAIRDROPMONAD_8ecbc7d6c53f"
+   },
+   {
+    "text": "'Will Nicol\u00e1s Maduro leave office next in this set?' (truth NO, A majority NO, resolution_date 2025-10-11, retrieved 2026-02-21). The packet includes https://polymarket.com/event/maduro-out-in-2025/maduro-out-by-february-28-2026 with published_date 2024-06-12, whose highlights contain ['Final outcome: Yes']. It is the market 'Maduro out by February 28, 2026' shown as settled Yes, content written after the resolution date.",
+    "row_uid": "row0023_KXLALEADEROUT_1ccab1781569"
+   },
+   {
+    "text": "'Will Nicolae Ciuca be 1st in the next Romanian presidential election first round?' (truth NO, A majority NO, resolution_date 2025-05-08, retrieved 2026-02-21). The packet includes https://polymarket.com/event/romania-presidential-election-1st-round-winner/will-nicolae-ciuc-win-the-most-votes-in-the-1st-round-of-the-romanian-presidential-election with published_date 2024-12-11, whose highlights contain ['Final outcome: No', 'George Simion100.0%']. It shows the May 2025 first round as decided (Simion at 100%). The round took place before the resolution date, so this is resolution-time information, but it was written five months after the reported publication date.",
+    "row_uid": "row0070_KXROMANIATOP_508b8b8b2424"
+   },
+   {
+    "text": "highlights__row0007_KXROMANIATOP_e3321e635fbc.json carries the same Ciuca page; this packet belongs to no row of A (False) or B (False)."
+   },
+   {
+    "text": "15 of these 16 packets belong to rows in the A results. A's majority matches the truth on 11 of 15, so these pages are a contamination of the evidence, not a measured gain in accuracy.",
+    "final_packets_in_A": 15,
+    "a_correct_on_them": 11
+   }
+  ],
+  "final_outcome_sources": [
+   [
+    "highlights__row0004_KXAIRDROPMONAD_8ecbc7d6c53f.json",
+    "https://polymarket.com/event/monad-airdrop-by/will-monad-perform-an-airdrop-by-september-30",
+    "2025-06-26T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0007_KXROMANIATOP_e3321e635fbc.json",
+    "https://polymarket.com/event/romania-presidential-election-1st-round-winner/will-nicolae-ciuc-win-the-most-votes-in-the-1st-round-of-the-romanian-presidential-election",
+    "2024-12-11T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0008_KXFOMCVOTE_05161dca5c28.json",
+    "https://base.polymarket.com/event/how-many-dissent-at-the-next-fed-meeting-526/will-three-people-dissent-the-september-fed-decision",
+    "2024-12-18T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0008_KXFOMCVOTE_05161dca5c28.json",
+    "https://polymarket.com/event/fed-decision-dissent-combo-in-december",
+    "2024-12-18T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0010_KXETHD_268c741ddcd8.json",
+    "https://polymarket.com/event/ethereum-up-or-down-november-26-1pm-et",
+    "2025-06-09T00:00:00.000Z",
+    "Final outcome: Up"
+   ],
+   [
+    "highlights__row0010_KXETHD_268c741ddcd8.json",
+    "https://polymarket.com/event/ethereum-up-or-down-november-26-2pm-et/ethereum-up-or-down-november-26-2pm-et",
+    "2025-06-09T00:00:00.000Z",
+    "Final outcome: Down"
+   ],
+   [
+    "highlights__row0010_KXETHD_268c741ddcd8.json",
+    "https://polymarket.com/event/ethereum-up-or-down-december-1-12am-et",
+    "2025-06-09T00:00:00.000Z",
+    "Final outcome: Up"
+   ],
+   [
+    "highlights__row0015_KXEUROVISION_1a4f17b066b5.json",
+    "https://polymarket.com/event/eurovision-winner-2025",
+    null,
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0023_KXLALEADEROUT_1ccab1781569.json",
+    "https://polymarket.com/event/maduro-out-in-2025/maduro-out-by-february-28-2026",
+    "2024-06-12T00:00:00.000Z",
+    "Final outcome: Yes"
+   ],
+   [
+    "highlights__row0023_KXLALEADEROUT_1ccab1781569.json",
+    "https://polymarket.com/event/maduro-out-in-2025",
+    "2025-03-19T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0027_KXETH_559033c226b3.json",
+    "https://polymarket.com/event/ethereum-up-or-down-november-26-1pm-et",
+    "2025-06-09T00:00:00.000Z",
+    "Final outcome: Up"
+   ],
+   [
+    "highlights__row0027_KXETH_559033c226b3.json",
+    "https://polymarket.com/event/ethereum-up-or-down-november-26-2pm-et/ethereum-up-or-down-november-26-2pm-et",
+    "2025-06-09T00:00:00.000Z",
+    "Final outcome: Down"
+   ],
+   [
+    "highlights__row0027_KXETH_559033c226b3.json",
+    "https://polymarket.com/event/ethereum-up-or-down-december-1-12am-et",
+    "2025-06-09T00:00:00.000Z",
+    "Final outcome: Up"
+   ],
+   [
+    "highlights__row0030_KXNASDAQ100U_b636a9fbff0d.json",
+    "https://polymarket.com/event/ndx-up-or-down-on-november-10-2025",
+    "2025-11-14T00:00:00.000Z",
+    "Final outcome: Up"
+   ],
+   [
+    "highlights__row0030_KXNASDAQ100U_b636a9fbff0d.json",
+    "https://polymarket.com/event/ndx-up-or-down-on-november-21-2025",
+    "2025-10-15T00:00:00.000Z",
+    "Final outcome: Up"
+   ],
+   [
+    "highlights__row0043_KXSOLETHRATIO_2f8e44b61cb0.json",
+    "https://polymarket.com/event/what-price-will-solana-hit-in-january-2026/will-solana-reach-170-in-january-2026",
+    "2025-02-01T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0043_KXSOLETHRATIO_2f8e44b61cb0.json",
+    "https://polymarket.com/event/what-price-will-solana-hit-before-2026/will-solana-reach-260-before-2026-327-264-879-598",
+    "2025-02-01T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0043_KXSOLETHRATIO_2f8e44b61cb0.json",
+    "https://polymarket.com/event/what-price-will-solana-hit-before-2026",
+    "2025-02-01T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0043_KXSOLETHRATIO_2f8e44b61cb0.json",
+    "https://polymarket.com/event/will-sol-flip-eth-in-2025",
+    "2025-02-12T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0043_KXSOLETHRATIO_2f8e44b61cb0.json",
+    "https://polymarket.com/event/will-sol-flip-eth-before-may",
+    "2025-01-22T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0048_KXBTCATH_5b1f60ccbfa8.json",
+    "https://polymarket.com/market/will-bitcoin-reach-95000-by-december-31-2025-818-596-821-318-841",
+    "2025-05-13T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0048_KXBTCATH_5b1f60ccbfa8.json",
+    "https://polymarket.com/event/what-price-will-bitcoin-hit-in-2025/will-bitcoin-reach-130000-by-december-31-2025-911-832",
+    "2024-11-27T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0048_KXBTCATH_5b1f60ccbfa8.json",
+    "https://polymarket.com/event/what-price-will-bitcoin-hit-in-2025/will-bitcoin-reach-250000-by-december-31-2025?tid=1752118317862",
+    "2024-12-30T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0051_KXNASDAQ100_84fb68ce8524.json",
+    "https://polymarket.com/event/ndx-up-or-down-on-november-10-2025",
+    "2025-11-14T00:00:00.000Z",
+    "Final outcome: Up"
+   ],
+   [
+    "highlights__row0051_KXNASDAQ100_84fb68ce8524.json",
+    "https://polymarket.com/event/nvda-up-or-down-on-november-3-2025",
+    "2025-11-14T00:00:00.000Z",
+    "Final outcome: Up"
+   ],
+   [
+    "highlights__row0051_KXNASDAQ100_84fb68ce8524.json",
+    "https://polymarket.com/event/ndx-up-or-down-on-november-21-2025",
+    "2025-10-15T00:00:00.000Z",
+    "Final outcome: Up"
+   ],
+   [
+    "highlights__row0052_KXG7LEADEROUT_dc24e74a5629.json",
+    "https://polymarket.com/event/mark-carney-out-as-leader-of-liberals-in-2025",
+    "2023-11-02T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0070_KXROMANIATOP_508b8b8b2424.json",
+    "https://polymarket.com/event/romania-presidential-election-1st-round-winner/will-nicolae-ciuc-win-the-most-votes-in-the-1st-round-of-the-romanian-presidential-election",
+    "2024-12-11T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0075_KXFDVMET_3ab8f93c9b41.json",
+    "https://polymarket.com/event/meteora-fdv-above-one-day-after-launch",
+    "2025-09-10T00:00:00.000Z",
+    "Final outcome: Yes"
+   ],
+   [
+    "highlights__row0075_KXFDVMET_3ab8f93c9b41.json",
+    "https://polymarket.com/event/meteora-fdv-above-one-day-after-launch/meteora-fdv-above-500m-one-day-after-launch",
+    "2025-09-10T00:00:00.000Z",
+    "Final outcome: Yes"
+   ],
+   [
+    "highlights__row0075_KXFDVMET_3ab8f93c9b41.json",
+    "https://pam.polymarket.com/event/meteora-fdv-above-one-day-after-launch/meteora-fdv-above-1b-one-day-after-launch-938-285",
+    "2023-11-02T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0075_KXFDVMET_3ab8f93c9b41.json",
+    "https://polymarket.com/event/kinetiq-fdv-above-one-day-after-launch/kinetiq-fdv-above-100m-one-day-after-launch",
+    "2025-09-30T00:00:00.000Z",
+    "Final outcome: Yes"
+   ],
+   [
+    "highlights__row0088_KXG7LEADEROUT_e6853aa56ecd.json",
+    "https://polymarket.com/event/mark-carney-out-as-leader-of-liberals-in-2025",
+    "2023-11-02T00:00:00.000Z",
+    "Final outcome: No"
+   ],
+   [
+    "highlights__row0098_KXSPOTIFYSONGSOPALITE_0f9b5d9f5185.json",
+    "https://polymarket.com/event/taylor-swift-opalite-195m-spotify-streams-on-friday",
+    "2025-10-22T00:00:00.000Z",
+    "Final outcome: Yes"
+   ]
+  ],
+  "final_outcome_packets": [
+   {
+    "row_uid": "row0004_KXAIRDROPMONAD_8ecbc7d6c53f",
+    "in_A": true,
+    "question": "Will Monad conduct an airdrop before Oct 1, 2025?",
+    "truth": "NO",
+    "a_majority": "YES",
+    "pages": [
+     [
+      "https://polymarket.com/event/monad-airdrop-by/will-monad-perform-an-airdrop-by-september-30",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0007_KXROMANIATOP_e3321e635fbc",
+    "in_A": false,
+    "question": null,
+    "truth": null,
+    "a_majority": null,
+    "pages": [
+     [
+      "https://polymarket.com/event/romania-presidential-election-1st-round-winner/will-nicolae-ciuc-win-the-most-votes-in-the-1st-round-of-the-romanian-presidential-election",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0008_KXFOMCVOTE_05161dca5c28",
+    "in_A": true,
+    "question": "Will anyone dissent at the next Fed meeting?",
+    "truth": "NO",
+    "a_majority": "YES",
+    "pages": [
+     [
+      "https://base.polymarket.com/event/how-many-dissent-at-the-next-fed-meeting-526/will-three-people-dissent-the-september-fed-decision",
+      "Final outcome: No"
+     ],
+     [
+      "https://polymarket.com/event/fed-decision-dissent-combo-in-december",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0010_KXETHD_268c741ddcd8",
+    "in_A": true,
+    "question": "Ethereum price at Nov 16, 2025 at 6pm EST?",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/ethereum-up-or-down-november-26-1pm-et",
+      "Final outcome: Up"
+     ],
+     [
+      "https://polymarket.com/event/ethereum-up-or-down-november-26-2pm-et/ethereum-up-or-down-november-26-2pm-et",
+      "Final outcome: Down"
+     ],
+     [
+      "https://polymarket.com/event/ethereum-up-or-down-december-1-12am-et",
+      "Final outcome: Up"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0015_KXEUROVISION_1a4f17b066b5",
+    "in_A": true,
+    "question": "Eurovision Winner 2025",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/eurovision-winner-2025",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0023_KXLALEADEROUT_1ccab1781569",
+    "in_A": true,
+    "question": "Will Nicol\u00e1s Maduro leave office next in this set?",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/maduro-out-in-2025/maduro-out-by-february-28-2026",
+      "Final outcome: Yes"
+     ],
+     [
+      "https://polymarket.com/event/maduro-out-in-2025",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0027_KXETH_559033c226b3",
+    "in_A": true,
+    "question": "Ethereum price at Nov 16, 2025 at 6pm EST?",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/ethereum-up-or-down-november-26-1pm-et",
+      "Final outcome: Up"
+     ],
+     [
+      "https://polymarket.com/event/ethereum-up-or-down-november-26-2pm-et/ethereum-up-or-down-november-26-2pm-et",
+      "Final outcome: Down"
+     ],
+     [
+      "https://polymarket.com/event/ethereum-up-or-down-december-1-12am-et",
+      "Final outcome: Up"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0030_KXNASDAQ100U_b636a9fbff0d",
+    "in_A": true,
+    "question": "Will the Nasdaq-100 be above 28399.99 at the end of Nov 14, 2025 at 4pm EST?",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/ndx-up-or-down-on-november-10-2025",
+      "Final outcome: Up"
+     ],
+     [
+      "https://polymarket.com/event/ndx-up-or-down-on-november-21-2025",
+      "Final outcome: Up"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0043_KXSOLETHRATIO_2f8e44b61cb0",
+    "in_A": true,
+    "question": "Will the SOL/ETH ratio be above .05 before Jan 1, 2026?",
+    "truth": "YES",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/what-price-will-solana-hit-in-january-2026/will-solana-reach-170-in-january-2026",
+      "Final outcome: No"
+     ],
+     [
+      "https://polymarket.com/event/what-price-will-solana-hit-before-2026/will-solana-reach-260-before-2026-327-264-879-598",
+      "Final outcome: No"
+     ],
+     [
+      "https://polymarket.com/event/what-price-will-solana-hit-before-2026",
+      "Final outcome: No"
+     ],
+     [
+      "https://polymarket.com/event/will-sol-flip-eth-in-2025",
+      "Final outcome: No"
+     ],
+     [
+      "https://polymarket.com/event/will-sol-flip-eth-before-may",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0048_KXBTCATH_5b1f60ccbfa8",
+    "in_A": true,
+    "question": "Will Bitcoin be above $124457.12 by Dec 31, 2025 at 11:59PM ET?",
+    "truth": "YES",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/market/will-bitcoin-reach-95000-by-december-31-2025-818-596-821-318-841",
+      "Final outcome: No"
+     ],
+     [
+      "https://polymarket.com/event/what-price-will-bitcoin-hit-in-2025/will-bitcoin-reach-130000-by-december-31-2025-911-832",
+      "Final outcome: No"
+     ],
+     [
+      "https://polymarket.com/event/what-price-will-bitcoin-hit-in-2025/will-bitcoin-reach-250000-by-december-31-2025?tid=1752118317862",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0051_KXNASDAQ100_84fb68ce8524",
+    "in_A": true,
+    "question": "Will the Nasdaq-100 be below 23700 at the end of Nov 14, 2025 at 4pm EST?",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/ndx-up-or-down-on-november-10-2025",
+      "Final outcome: Up"
+     ],
+     [
+      "https://polymarket.com/event/nvda-up-or-down-on-november-3-2025",
+      "Final outcome: Up"
+     ],
+     [
+      "https://polymarket.com/event/ndx-up-or-down-on-november-21-2025",
+      "Final outcome: Up"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0052_KXG7LEADEROUT_dc24e74a5629",
+    "in_A": true,
+    "question": "Will Mark Carney leave office next in this set?",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/mark-carney-out-as-leader-of-liberals-in-2025",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0070_KXROMANIATOP_508b8b8b2424",
+    "in_A": true,
+    "question": "Will Nicolae Ciuca be 1st in the next Romanian presidential election first round?",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/romania-presidential-election-1st-round-winner/will-nicolae-ciuc-win-the-most-votes-in-the-1st-round-of-the-romanian-presidential-election",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0075_KXFDVMET_3ab8f93c9b41",
+    "in_A": true,
+    "question": "What will MET FDV be 1 day after launch?",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/meteora-fdv-above-one-day-after-launch",
+      "Final outcome: Yes"
+     ],
+     [
+      "https://polymarket.com/event/meteora-fdv-above-one-day-after-launch/meteora-fdv-above-500m-one-day-after-launch",
+      "Final outcome: Yes"
+     ],
+     [
+      "https://pam.polymarket.com/event/meteora-fdv-above-one-day-after-launch/meteora-fdv-above-1b-one-day-after-launch-938-285",
+      "Final outcome: No"
+     ],
+     [
+      "https://polymarket.com/event/kinetiq-fdv-above-one-day-after-launch/kinetiq-fdv-above-100m-one-day-after-launch",
+      "Final outcome: Yes"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0088_KXG7LEADEROUT_e6853aa56ecd",
+    "in_A": true,
+    "question": "Will Mark Carney leave office next in this set?",
+    "truth": "NO",
+    "a_majority": "NO",
+    "pages": [
+     [
+      "https://polymarket.com/event/mark-carney-out-as-leader-of-liberals-in-2025",
+      "Final outcome: No"
+     ]
+    ]
+   },
+   {
+    "row_uid": "row0098_KXSPOTIFYSONGSOPALITE_0f9b5d9f5185",
+    "in_A": true,
+    "question": "Opalite streams by Nov 7, 2025?",
+    "truth": "YES",
+    "a_majority": "YES",
+    "pages": [
+     [
+      "https://polymarket.com/event/taylor-swift-opalite-195m-spotify-streams-on-friday",
+      "Final outcome: Yes"
+     ]
+    ]
+   }
+  ]
+ },
+ "F9": {
+  "title": "Row identity: duplicates in A, rows missing from A, and an id that is a series ticker",
+  "facts": [
+   {
+    "text": "Rows: A 1189, B 1189, evaluation CSV 1189. Distinct contracts (id + question + criteria): A 1153, B 1188, evaluation 1188.",
+    "a_distinct": 1153,
+    "b_distinct": 1188,
+    "d_distinct": 1188
+   },
+   {
+    "text": "Multiset difference against the evaluation CSV: A has 35 rows not in the evaluation set and lacks 35 of its rows. B: 0 and 0.",
+    "a_extra": 35,
+    "a_missing": 35
+   },
+   {
+    "text": "id equals series_ticker in 1189 of 1189 evaluation rows; distinct ids 703; ids with exactly 2 rows 486, with more than 2 rows 0."
+   }
+  ]
+ },
+ "F10": {
+  "title": "Pairing of A and B in the analysis script joins different contracts",
+  "facts": [
+   {
+    "text": "The script's pairing gives 1170 pairs; in 16 of them the resolution criteria differ.",
+    "pairs": 1170,
+    "mismatched": 16
+   },
+   {
+    "text": "Pairing by contract identity: 1153 pairs, A maj only 113, B only 37, exact McNemar p = 3.8e-10. The direction and significance of Table 4 hold."
+   },
+   {
+    "text": "Pairing by contract identity: 1153 pairs, A wtd only 119, B only 37, exact McNemar p = 3.1e-11. The direction and significance of Table 4 hold."
+   }
+  ]
+ },
+ "F11": {
+  "title": "Numbers in the paper checked against the published files",
+  "facts": [
+   {
+    "text": "47 of 50 checked values reproduce to the reported precision (tolerance 0.051 points for percentages, 0.0006 for correlations and probabilities, 5% relative for p-values, exact for counts).",
+    "reproduced": 47,
+    "checked": 50
+   },
+   {
+    "text": "Table 5 is captioned confidence-weighted. Its counts equal A's majority vote (852/117/37/164); the weighted vote gives 852/123/37/158."
+   },
+   {
+    "text": "The 99.15% of Section 4.5 is probably B at 20% coverage: 99.156% in comparison_summary.json."
+   }
+  ],
+  "table": [
+   [
+    "Table 3",
+    "GPT-5 nano (labelled GPT-4o)",
+    "82.34",
+    "82.34",
+    "reproduces"
+   ],
+   [
+    "Table 3",
+    "DeepSeek",
+    "82.42",
+    "82.42",
+    "reproduces"
+   ],
+   [
+    "Table 3",
+    "Llama",
+    "81.24",
+    "81.24",
+    "reproduces"
+   ],
+   [
+    "Table 3",
+    "A majority",
+    "82.93",
+    "82.93",
+    "reproduces"
+   ],
+   [
+    "Table 3",
+    "A confidence-weighted",
+    "83.43",
+    "83.43",
+    "reproduces"
+   ],
+   [
+    "Table 3",
+    "B final-round GPT",
+    "74.35",
+    "74.35",
+    "reproduces"
+   ],
+   [
+    "Table 3",
+    "B final-round DeepSeek",
+    "76.7",
+    "76.7",
+    "reproduces"
+   ],
+   [
+    "Table 3",
+    "B final-round Llama",
+    "76.37",
+    "76.37",
+    "reproduces"
+   ],
+   [
+    "Table 3",
+    "B deliberative final",
+    "76.11",
+    "76.11",
+    "reproduces"
+   ],
+   [
+    "Table 5",
+    "A vs B: both / A only / B only / both wrong",
+    "852/117/37/164",
+    "852/117/37/164",
+    "reproduces"
+   ],
+   [
+    "Table 6",
+    "A all correct / mixed / all wrong",
+    "380/67/39",
+    "380/67/39",
+    "reproduces"
+   ],
+   [
+    "Table 6",
+    "B all correct / mixed / all wrong",
+    "338/90/58",
+    "338/90/58",
+    "reproduces"
+   ],
+   [
+    "Table 8",
+    "r(GPT, DeepSeek)",
+    "0.58",
+    "0.58",
+    "reproduces"
+   ],
+   [
+    "Table 8",
+    "r(GPT, Llama)",
+    "0.529",
+    "0.53",
+    "reproduces"
+   ],
+   [
+    "Table 8",
+    "r(DeepSeek, Llama)",
+    "0.689",
+    "0.69",
+    "reproduces"
+   ],
+   [
+    "Table 9",
+    "P(DeepSeek wrong | GPT wrong)",
+    "0.652",
+    "0.65",
+    "reproduces"
+   ],
+   [
+    "Table 9",
+    "P(Llama wrong | GPT wrong)",
+    "0.633",
+    "0.63",
+    "reproduces"
+   ],
+   [
+    "Table 9",
+    "P(Llama wrong | DeepSeek wrong)",
+    "0.77",
+    "0.77",
+    "reproduces"
+   ],
+   [
+    "Table 9",
+    "P(DeepSeek wrong | Llama wrong)",
+    "0.722",
+    "0.72",
+    "reproduces"
+   ],
+   [
+    "Section 4.3",
+    "text: 63.3% 'for GPT-4o when Llama errs' = P(GPT wrong | Llama wrong)",
+    "0.633",
+    "0.6",
+    "DIFFERS"
+   ],
+   [
+    "Table 4",
+    "A majority vs A weighted: 1/7, exact McNemar p",
+    "0.07",
+    "0.07",
+    "reproduces"
+   ],
+   [
+    "Table 4",
+    "A majority vs B: 117/37, exact McNemar p",
+    "7.2e-11",
+    "7.2e-11",
+    "reproduces"
+   ],
+   [
+    "Table 4",
+    "A weighted vs B: 123/37, exact McNemar p",
+    "5.5e-12",
+    "5.5e-12",
+    "reproduces"
+   ],
+   [
+    "Table 10",
+    "round-1 consensus n",
+    "1002",
+    "1002",
+    "reproduces"
+   ],
+   [
+    "Table 10",
+    "round-1 consensus accuracy",
+    "80.24",
+    "80.24",
+    "reproduces"
+   ],
+   [
+    "Table 10",
+    "round-2 consensus n",
+    "58",
+    "58",
+    "reproduces"
+   ],
+   [
+    "Table 10",
+    "round-2 consensus accuracy",
+    "56.9",
+    "56.9",
+    "reproduces"
+   ],
+   [
+    "Table 10",
+    "no consensus n",
+    "129",
+    "129",
+    "reproduces"
+   ],
+   [
+    "Table 10",
+    "no consensus accuracy",
+    "52.71",
+    "52.71",
+    "reproduces"
+   ],
+   [
+    "Figure 5",
+    "net revisions GPT-5 nano",
+    "-10",
+    "-10",
+    "reproduces"
+   ],
+   [
+    "Figure 5",
+    "net revisions DeepSeek V3",
+    "6",
+    "6",
+    "reproduces"
+   ],
+   [
+    "Table 11",
+    "unanimous n",
+    "978",
+    "978",
+    "reproduces"
+   ],
+   [
+    "Table 11",
+    "unanimous accuracy",
+    "88.34",
+    "88.34",
+    "reproduces"
+   ],
+   [
+    "Table 11",
+    "split accuracy",
+    "57.82",
+    "57.82",
+    "reproduces"
+   ],
+   [
+    "Table 12",
+    "median average confidence",
+    "0.91",
+    "0.91",
+    "reproduces"
+   ],
+   [
+    "Table 12",
+    "unanimous, high: n",
+    "563",
+    "563",
+    "reproduces"
+   ],
+   [
+    "Table 12",
+    "unanimous, high: accuracy",
+    "97.87",
+    "97.87",
+    "reproduces"
+   ],
+   [
+    "Section 4.5",
+    "A at 10% coverage (text says 100% and, one paragraph later, 99.15%)",
+    "100 / 99.15",
+    "100.00",
+    "inconsistent in text"
+   ],
+   [
+    "Section 4.5",
+    "B better than A at the top of the ranking (text: 100% vs 99.15% at 10%)",
+    "B > A",
+    "B>A at 0 of 1,189 prefixes; at 10% A 100%, B 100%",
+    "DIFFERS"
+   ],
+   [
+    "Section 4.5",
+    "A at 50% coverage",
+    "97.47",
+    "97.47",
+    "reproduces"
+   ],
+   [
+    "Section 4.5",
+    "A at 75% coverage",
+    "90.12",
+    "90.12",
+    "reproduces"
+   ],
+   [
+    "Section 4.5",
+    "gap A - B at 50% coverage",
+    "10.44",
+    "10.44",
+    "reproduces"
+   ],
+   [
+    "Table 12",
+    "unanimous, low: n",
+    "415",
+    "415",
+    "reproduces"
+   ],
+   [
+    "Table 12",
+    "unanimous, low: accuracy",
+    "75.42",
+    "75.42",
+    "reproduces"
+   ],
+   [
+    "Table 12",
+    "split, high: n",
+    "46",
+    "46",
+    "reproduces"
+   ],
+   [
+    "Table 12",
+    "split, high: accuracy",
+    "56.52",
+    "56.52",
+    "reproduces"
+   ],
+   [
+    "Table 12",
+    "split, low: n",
+    "165",
+    "165",
+    "reproduces"
+   ],
+   [
+    "Table 12",
+    "split, low: accuracy",
+    "58.18",
+    "58.18",
+    "reproduces"
+   ],
+   [
+    "Section 4.5",
+    "coverage of unanimous high-confidence rows",
+    "47.4",
+    "47.35",
+    "reproduces"
+   ],
+   [
+    "Section 4.5",
+    "coverage of all unanimous rows",
+    "82.3",
+    "82.25",
+    "reproduces"
+   ]
+  ]
+ },
+ "F12": {
+  "title": "Table 7, the unique-market result and the model label",
+  "facts": [
+   {
+    "text": "Table 7 'Best Baseline' for Politics: paper 76.2. Per model: GPT-5 nano 76.2, DeepSeek V3 78.8, Llama 3.3 70B 79.1. The paper's value equals GPT-5 nano's."
+   },
+   {
+    "text": "Table 7 'Best Baseline' for Economics: paper 57.1. Per model: GPT-5 nano 57.1, DeepSeek V3 76.2, Llama 3.3 70B 76.2. The paper's value equals GPT-5 nano's."
+   },
+   {
+    "text": "Table 7 'Best Baseline' for Social: paper 76.9. Per model: GPT-5 nano 76.9, DeepSeek V3 100.0, Llama 3.3 70B 84.6. The paper's value equals GPT-5 nano's."
+   },
+   {
+    "text": "Table 7 'Best Baseline' for Health: paper 50.0. Per model: GPT-5 nano 50.0, DeepSeek V3 100.0, Llama 3.3 70B 100.0. The paper's value equals GPT-5 nano's."
+   },
+   {
+    "text": "Table 7 'Best Baseline' for Mentions: paper 76.9. Per model: GPT-5 nano 76.9, DeepSeek V3 78.8, Llama 3.3 70B 71.2. The paper's value equals GPT-5 nano's."
+   },
+   {
+    "text": "Table 7 'Best Baseline' for Science and Technology: paper 40.0. Per model: GPT-5 nano 40.0, DeepSeek V3 60.0, Llama 3.3 70B 60.0. The paper's value equals GPT-5 nano's."
+   },
+   {
+    "text": "Table 7 'Best Baseline' for Financials: paper 90.0. Per model: GPT-5 nano 90.0, DeepSeek V3 93.3, Llama 3.3 70B 90.0. The paper's value equals GPT-5 nano's."
+   },
+   {
+    "text": "Politics: A weighted 79.4% against the best single model 79.1% (Llama), a gap of 0.3 points; the paper reports 3.2 points (79.4% vs 76.2%)."
+   },
+   {
+    "text": "Unique-market accuracy (first row per id), A final: 576/703 = 81.9% [Wilson 0.789, 0.846]. Paper: A 81.9% [0.789, 0.846], B 75.5% [0.722, 0.786]."
+   },
+   {
+    "text": "Unique-market accuracy (first row per id), B final: 520/703 = 74.0% [Wilson 0.706, 0.771]. Paper: A 81.9% [0.789, 0.846], B 75.5% [0.722, 0.786]."
+   },
+   {
+    "text": "Unique-market accuracy (first row per id), B DeepSeek round 2: 531/703 = 75.5% [Wilson 0.722, 0.786]. Paper: A 81.9% [0.789, 0.846], B 75.5% [0.722, 0.786]."
+   },
+   {
+    "text": "scripts/analysis_by_market_instance.py chooses the decision column with the highest accuracy (lines 87 and 272) and writes it to summary_comparison.md as 'Best-performing decision column' (line 306). On unique markets of A that column is final_decision (81.9%).",
+    "best_column": "final_decision"
+   },
+   {
+    "text": "scripts/analysis_by_market_instance.py chooses the decision column with the highest accuracy (lines 87 and 272) and writes it to summary_comparison.md as 'Best-performing decision column' (line 306). On unique markets of B that column is deepseek_round2_decision (75.5%).",
+    "best_column": "deepseek_round2_decision"
+   },
+   {
+    "text": "Temperature 0 is set only for models whose id does not start with gpt-5 (openai_agent.py lines 66-68), so GPT-5 nano runs at its default temperature."
+   },
+   {
+    "text": "src/agents/openai_agent.py sets MODEL_ID = 'gpt-5-nano': True. Tables 3, 8 and 9 and Sections 4.3 and 4.4.5 call this model GPT-4o; the result columns are named gpt4o_*."
+   },
+   {
+    "text": "The confidence threshold of Table 12 is the median of the same 1,189 rows (0.91), so the 97.87% is measured on the rows that set the threshold."
+   }
+  ]
+ }
+}

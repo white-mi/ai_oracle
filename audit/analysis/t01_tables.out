@@ -1,0 +1,88 @@
+== Table 1/2: dataset file
+rows=1189 yes=488 (0.410) no=701 categories=16 unique ids=703 close range 2025-05-01..2025-11-16
+{'Politics': 311, 'Sports': 269, 'Entertainment': 230, 'Elections': 80, 'Crypto': 59, 'Mentions': 52, 'Companies': 50, 'Financials': 30, 'World': 29, 'Climate and Weather': 27, 'Economics': 21, 'Social': 13, 'Science and Technology': 10, 'Transportation': 4, 'Health': 2, 'Education': 2}
+files: A rows 1189 distinct questions 1153 | B rows 1189 distinct 1188 | dataset distinct 1188
+A YES rows 486 B YES rows 488
+dataset questions missing from A: 35 ; from B: 0 ; duplicate rows in A: 36 in B: 1
+
+== Table 3: accuracy
+GPT-5 nano     single=82.34  B final-round=74.35  (B round1=75.19)
+DeepSeek V3    single=82.42  B final-round=76.70  (B round1=76.20)
+Llama 3.3 70B  single=81.24  B final-round=76.37  (B round1=76.20)
+A majority=82.93 weighted=83.43  B final=76.11
+
+== Table 4/5: paired A vs B under different pairings
+  [by file position] A majority vs B final: n=1189 both ok=867 A-only=119 B-only=38 both wrong=165 p=6.4e-11  accA=82.9 accB=76.1
+  [by file position] A weighted vs B final: n=1189 both ok=867 A-only=125 B-only=38 both wrong=159 p=5.0e-12  accA=83.4 accB=76.1
+  [by row_uid] A majority vs B final: n=839 both ok=616 A-only=83 B-only=25 both wrong=115 p=1.9e-08  accA=83.3 accB=76.4
+  [by row_uid] A weighted vs B final: n=839 both ok=617 A-only=87 B-only=24 both wrong=111 p=1.4e-09  accA=83.9 accB=76.4
+  [by question (dedup)] A majority vs B final: n=1153 both ok=841 A-only=113 B-only=37 both wrong=162 p=3.8e-10  accA=82.7 accB=76.1
+  [by question (dedup)] A weighted vs B final: n=1153 both ok=841 A-only=119 B-only=37 both wrong=156 p=3.1e-11  accA=83.3 accB=76.1
+  A majority vs A weighted: maj-only=1 wtd-only=7 p=0.070
+
+== Sec 4.1.1: unique markets and Table 6
+A: unique-market acc (first row per id) 81.9% [0.789,0.846] n=703; multi-row markets=486: all correct=380 mixed=67 all wrong=39
+B: unique-market acc (first row per id) 74.0% [0.706,0.771] n=703; multi-row markets=486: all correct=338 mixed=90 all wrong=58
+
+== Table 7: category accuracy
+              category  nA  nB  A_wtd  A_maj  best_single     B  disagree
+              Politics 311 311   79.4   79.1         79.1  73.0      24.4
+                Sports 269 269   92.9   91.4         92.2  82.9      13.0
+         Entertainment 230 230   87.8   87.8         87.8  79.6      11.7
+             Elections  80  80   91.2   91.2         95.0  85.0      13.7
+                Crypto  59  59   66.1   62.7         67.8  59.3      18.6
+              Mentions  52  52   80.8   80.8         78.8  75.0      19.2
+             Companies  50  50   58.0   58.0         62.0  68.0      20.0
+            Financials  30  30   93.3   93.3         93.3  86.7      13.3
+                 World  29  29   86.2   86.2         86.2  89.7       6.9
+   Climate and Weather  27  27   70.4   74.1         77.8  66.7      25.9
+             Economics  21  21   66.7   66.7         76.2  42.9      28.6
+                Social  13  13   92.3   92.3        100.0  69.2      30.8
+Science and Technology  10  10   60.0   60.0         60.0  40.0      40.0
+        Transportation   4   4   50.0   50.0         75.0  25.0      75.0
+                Health   2   2  100.0  100.0        100.0  50.0      50.0
+             Education   2   2  100.0  100.0        100.0 100.0       0.0
+
+== Table 8/9: error correlation and conditional error
+               GPT-5 nano  DeepSeek V3  Llama 3.3 70B
+GPT-5 nano          1.000        0.580          0.529
+DeepSeek V3         0.580        1.000          0.689
+Llama 3.3 70B       0.529        0.689          1.000
+  P(DeepSeek V3 wrong | GPT-5 nano wrong) = 0.652
+  P(Llama 3.3 70B wrong | GPT-5 nano wrong) = 0.633
+  P(GPT-5 nano wrong | DeepSeek V3 wrong) = 0.656
+  P(Llama 3.3 70B wrong | DeepSeek V3 wrong) = 0.770
+  P(GPT-5 nano wrong | Llama 3.3 70B wrong) = 0.596
+  P(DeepSeek V3 wrong | Llama 3.3 70B wrong) = 0.722
+Condorcet (independent, p=0.8200): 0.9145; with actual p's: 0.9145
+
+== Table 10 and revisions (B)
+R1 consensus n=1002 acc=80.24; not: n=187; of those R2 consensus n=58 acc=56.9; no consensus n=129 acc=52.7
+  GPT-5 nano     decision changes=42 correct->wrong=26 wrong->correct=16; self-reported revised=True: 52 (matches actual change in 1177 rows)
+  DeepSeek V3    decision changes=12 correct->wrong=3 wrong->correct=9; self-reported revised=True: 10 (matches actual change in 1179 rows)
+  Llama 3.3 70B  decision changes=34 correct->wrong=16 wrong->correct=18; self-reported revised=True: 35 (matches actual change in 1186 rows)
+  total changes=88 of 3567 (2.47%), rows affected=83
+
+== Table 11/12 and coverage curve (A)
+unanimous n=978 acc=88.34; split n=211 acc=57.82; median mean-confidence=0.910
+  unan=1 highconf=True: n=563 acc=97.87
+  unan=1 highconf=False: n=415 acc=75.42
+  unan=0 highconf=True: n=46 acc=56.52
+  unan=0 highconf=False: n=165 acc=58.18
+  (with strict > median): u1h1 n=551 acc=98.19, u1h0 n=427 acc=75.64, u0h1 n=40 acc=62.50, u0h0 n=171 acc=56.73
+  A composite: {'10%': np.float64(99.16), '20%': np.float64(99.58), '25%': np.float64(99.66), '50%': np.float64(97.47), '75%': np.float64(90.13)}
+  B composite (round 2 signals): {'10%': np.float64(100.0), '20%': np.float64(99.16), '25%': np.float64(97.64), '50%': np.float64(87.04), '75%': np.float64(80.49)}
+  repo file coverage_accuracy_comparison.csv head:
+  rank  fraction_auto_resolved  architecture_a_accuracy  architecture_b_accuracy  accuracy_gap_a_minus_b
+    1                0.000841                      1.0                      1.0                     0.0
+    2                0.001682                      1.0                      1.0                     0.0
+    3                0.002523                      1.0                      1.0                     0.0
+    4                0.003364                      1.0                      1.0                     0.0
+    5                0.004205                      1.0                      1.0                     0.0
+    6                0.005046                      1.0                      1.0                     0.0
+    7                0.005887                      1.0                      1.0                     0.0
+    8                0.006728                      1.0                      1.0                     0.0
+    9                0.007569                      1.0                      1.0                     0.0
+   10                0.008410                      1.0                      1.0                     0.0
+   11                0.009251                      1.0                      1.0                     0.0
+   12                0.010093                      1.0                      1.0                     0.0

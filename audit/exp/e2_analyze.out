@@ -1,0 +1,78 @@
+rows 430; true YES 174 (40.5%); always-NO accuracy 59.5%; markets 398
+
+== Haiku (content, prompt A) vs published systems on the same rows
+  Haiku 84.2 vs A majority     81.6: Haiku-only 22, other-only 11, diff +2.6 pp [0.0,5.1] p=0.080
+  Haiku 84.2 vs A weighted     82.1: Haiku-only 21, other-only 12, diff +2.1 pp [-0.5,4.7] p=0.163
+  Haiku 84.2 vs GPT-5 nano     79.1: Haiku-only 34, other-only 12, diff +5.1 pp [2.2,8.1] p=0.002
+  Haiku 84.2 vs DeepSeek V3    81.6: Haiku-only 27, other-only 16, diff +2.6 pp [-0.5,5.5] p=0.126
+  Haiku 84.2 vs Llama 3.3 70B  78.8: Haiku-only 39, other-only 16, diff +5.3 pp [2.1,8.8] p=0.003
+
+== closed book, haiku: n valid 430
+  accuracy 63.7 [59.1,68.3]; YES share 34.0; recall YES 47.1; recall NO 75.0
+  Brier 0.272 (base-rate Brier 0.241); AUC of P(YES) 0.628
+  |p-0.5|>=0.4 on 35.6% rows, accuracy there 66.0; p==0.5 exactly: 13
+  distribution of p_yes: 0.00, 0.15, 0.25, 0.72, 0.95
+  with evidence (HA) vs closed book: evidence-only 122, closed-only 34, p=7.7e-13
+                 n  closed  with_ev
+cat                                
+Companies       30    63.3     56.7
+Crypto          24    66.7     79.2
+Elections       37    64.9     97.3
+Entertainment   78    70.5     89.7
+Mentions        15    66.7     86.7
+Politics       103    51.5     80.6
+Sports          93    75.3     90.3
+
+== closed book, sonnet: n valid 430
+  accuracy 86.0 [82.7,89.4]; YES share 38.1; recall YES 79.9; recall NO 90.2
+  Brier 0.105 (base-rate Brier 0.241); AUC of P(YES) 0.931
+  |p-0.5|>=0.4 on 72.8% rows, accuracy there 93.6; p==0.5 exactly: 11
+  distribution of p_yes: 0.00, 0.02, 0.25, 0.93, 0.98
+  with evidence (HA) vs closed book: evidence-only 45, closed-only 53, p=0.48
+                 n  closed  with_ev
+cat                                
+Companies       30    73.3     56.7
+Crypto          24    95.8     79.2
+Elections       37    97.3     97.3
+Entertainment   78    82.1     89.7
+Mentions        15    73.3     86.7
+Politics       103    90.3     80.6
+Sports          93    81.7     90.3
+
+== test-retest, Haiku, content + prompt A
+  rep0: acc 84.2; YES share 32.1; mean conf 0.845
+  rep1: acc 84.4; YES share 31.4; mean conf 0.845
+  rep2: acc 83.5; YES share 31.9; mean conf 0.847
+  decisions differ rep0 vs rep1: 16 of 430 (3.7%)
+  decisions differ rep0 vs rep2: 22 of 430 (5.1%)
+  decisions differ rep1 vs rep2: 17 of 430 (4.0%)
+  majority of 3 repeats: acc 84.2 [80.7,87.7]; unanimous on 94.0% rows, acc there 86.1; split rows 26, acc 53.8
+
+== abstention option, Haiku: answers {'NO': np.int64(180), 'INSUFFICIENT': np.int64(128), 'YES': np.int64(121)}
+  INSUFFICIENT on 29.8% rows; of those true YES 32.8% (base 40.5%)
+  accuracy on answered (301 rows, coverage 70.0%): 90.7; recall YES among answered 85.5; recall NO 94.7
+  binary run (HA) on the same answered rows: 91.0; on the abstained rows: 68.8  (n=128)
+  what the binary run said on abstained rows: {'NO': np.int64(112), 'YES': np.int64(16)}; binary-run errors absorbed by abstention: 40 of 68; false NO absorbed 33 of 52; false YES absorbed 7 of 16
+  confidence gate of the binary run at the same coverage (301 rows): accuracy 92.4
+  answered and confidence>=0.9: coverage 57.4%, accuracy 95.5 (errors 11/247)
+  answered and confidence>=0.95: coverage 54.4%, accuracy 97.0 (errors 7/234)
+
+== confidence signals compared (Haiku)
+  verbalized confidence (decision + confidence, with reasoning)  n=429 acc 84.4  Brier 0.132  ECE 0.088  AUC(P yes) 0.908  AURC 0.0484  conf>=0.9: 63% rows at 94.1
+      top 25% by confidence: accuracy 100.0 (errors 0/107)      top 50% by confidence: accuracy 97.7 (errors 5/214)      top 75% by confidence: accuracy 91.0 (errors 29/321)
+  bare P(YES), no reasoning                                      n=429 acc 84.6  Brier 0.113  ECE 0.067  AUC(P yes) 0.923  AURC 0.0445  conf>=0.9: 71% rows at 91.9
+      top 25% by confidence: accuracy 99.1 (errors 1/107)      top 50% by confidence: accuracy 97.2 (errors 6/214)      top 75% by confidence: accuracy 91.6 (errors 27/321)
+  bare P(evidence states it occurred), no reasoning              n=429 acc 82.3  Brier 0.152  ECE 0.141  AUC(P yes) 0.883  AURC 0.0922  conf>=0.9: 87% rows at 86.9
+      top 25% by confidence: accuracy 91.6 (errors 9/107)      top 50% by confidence: accuracy 91.6 (errors 18/214)      top 75% by confidence: accuracy 90.3 (errors 31/321)
+  mean P(YES) of 3 verbalized repeats                            n=429 acc 81.1  Brier 0.125  ECE 0.059  AUC(P yes) 0.911  AURC 0.0520  conf>=0.9: 61% rows at 95.5
+      top 25% by confidence: accuracy 100.0 (errors 0/107)      top 50% by confidence: accuracy 98.1 (errors 4/214)      top 75% by confidence: accuracy 91.3 (errors 28/321)
+  self-consistency: unanimous of 3 repeats + mean confidence     n=429 acc 84.4  Brier 0.129  ECE 0.014  AUC(P yes) 0.914  AURC 0.0460  conf>=0.9: 94% rows at 86.4
+      top 25% by confidence: accuracy 100.0 (errors 0/107)      top 50% by confidence: accuracy 97.7 (errors 5/214)      top 75% by confidence: accuracy 91.0 (errors 29/321)
+  reference: error rate of HA 0.1581
+  bare P(YES) vs bare P(evidence states): correlation 0.858; mean 0.392 vs 0.293; share of exact 0 or 1: 26% / 44%; distinct values 43 / 18
+  average of verbalized and bare P(YES): acc 84.4 Brier 0.114 AURC 0.0461
+  verbalized decision and bare decision agree on 86.5% rows; accuracy when they agree 88.7, when they disagree 56.1 (n=57)
+
+== explicit current date in prompt (n=150): with date 83.3 vs baseline 84.7; date-only correct 4, baseline-only 6, p=0.75; YES share 33.3 vs 32.0
+
+costs: {'e2_closed_haiku_nall.csv': np.float64(2.01), 'e2_date_haiku_n150.csv': np.float64(2.87), 'e2_noul_haiku_nall.csv': np.float64(7.44), 'e2_abstain_haiku_nall.csv': np.float64(8.24), 'e2_noulb_haiku_nall.csv': np.float64(7.33), 'e2_rep2_haiku_nall.csv': np.float64(8.22), 'e2_closed_sonnet_nall.csv': np.float64(3.65), 'e2_rep1_haiku_nall.csv': np.float64(8.21)}

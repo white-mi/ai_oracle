@@ -1,0 +1,20 @@
+== all 430
+  text vs titles (prompt A): 84.2 vs 77.0, diff +7.2 [+3.7,+11.0]
+  prompt A vs B with text: +0.2 pp
+  Haiku vs paper majority: 84.2 vs 81.6 (22 vs 11, p=0.080)
+    gpt4o: A 79.1%  B round 1 74.4%
+    deepseek: A 81.6%  B round 1 76.0%
+    llama: A 78.8%  B round 1 75.8%
+  AURC: Haiku P(YES) 0.045 vs paper composite 0.070
+  abstention: INSUFFICIENT 30.0%, accuracy on answered 90.7%
+  debate round 2 vs round 1 (Haiku, full text): 83.7 vs 84.0 (11 vs 12, p=1.00)
+== Aug-Nov 340
+  text vs titles (prompt A): 83.2 vs 77.1, diff +6.2 [+2.0,+10.6]
+  prompt A vs B with text: -0.3 pp
+  Haiku vs paper majority: 83.2 vs 81.5 (15 vs 9, p=0.307)
+    gpt4o: A 79.7%  B round 1 76.5%
+    deepseek: A 81.5%  B round 1 76.5%
+    llama: A 78.5%  B round 1 75.9%
+  AURC: Haiku P(YES) 0.048 vs paper composite 0.073
+  abstention: INSUFFICIENT 30.6%, accuracy on answered 89.8%
+  debate round 2 vs round 1 (Haiku, full text): 82.9 vs 83.5 (7 vs 9, p=0.80)

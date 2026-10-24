@@ -1,0 +1,307 @@
+diff --git a/scripts/analyze_architecture_results.py b/scripts/analyze_architecture_results.py
+index 3d473c1..c1cab56 100644
+--- a/scripts/analyze_architecture_results.py
++++ b/scripts/analyze_architecture_results.py
+@@ -42,7 +42,8 @@ def load_data(arch_a_path: Path, arch_b_path: Path) -> Tuple[pd.DataFrame, pd.Da
+ def majority_vote(df: pd.DataFrame, decision_cols: List[str]) -> pd.Series:
+     yes_votes = (df[decision_cols] == "YES").sum(axis=1)
+     no_votes = (df[decision_cols] == "NO").sum(axis=1)
+-    return np.where(yes_votes >= no_votes, "YES", "NO")
++    # FIX: ties go to NO, as in the runtime aggregation (MajorityVoteStrategy)
++    return np.where(yes_votes > no_votes, "YES", "NO")
+ 
+ 
+ def weighted_vote(df: pd.DataFrame) -> pd.Series:
+@@ -135,11 +136,15 @@ def mcnemar_exact(y_true: pd.Series, pred_a: pd.Series, pred_b: pd.Series) -> Di
+ def build_overlap(a: pd.DataFrame, b: pd.DataFrame) -> pd.DataFrame:
+     a2 = a.copy()
+     b2 = b.copy()
+-    key_cols = ["question_text", "ground_truth"]
+-    a2["_match_key"] = a2[key_cols].astype(str).agg("||".join, axis=1)
+-    b2["_match_key"] = b2[key_cols].astype(str).agg("||".join, axis=1)
+-    a2["_occ"] = a2.groupby("_match_key").cumcount()
+-    b2["_occ"] = b2.groupby("_match_key").cumcount()
++    # FIX: pair rows by question identity (id + question + resolution criteria), not by question text,
++    # ground truth and order of appearance; duplicates are dropped so each question counts once.
++    key_cols = ["question_id", "question_text", "resolution_criteria"]
++    for frame in (a2, b2):
++        frame["_match_key"] = frame[key_cols].astype(str).apply(lambda c: c.str.split().str.join(" ")).agg("||".join, axis=1)
++    a2 = a2.drop_duplicates("_match_key").copy()
++    b2 = b2.drop_duplicates("_match_key").copy()
++    a2["_occ"] = 0
++    b2["_occ"] = 0
+ 
+     keep_a = ["_match_key", "_occ", "category", "ground_truth", "final_decision", "weighted_final", "a_disagree"]
+     keep_b = ["_match_key", "_occ", "final_decision", "round1_yes_votes", "round1_no_votes", "round2_yes_votes", "round2_no_votes"]
+@@ -536,7 +541,7 @@ def main() -> None:
+                 "head_to_head": overlap_summary,
+                 "notes": [
+                     "Architecture B file contains 2 rounds of deliberation; no explicit round-3 columns detected.",
+-                    "Head-to-head overlap matched using (question_text, ground_truth, occurrence index).",
++                    "Head-to-head overlap matched by question identity (question_id, question_text, resolution_criteria), one row per question.",
+                     "Architecture B revision analysis uses actual round-1 vs round-2 decision changes rather than the *_round2_revised flags.",
+                     "Architecture B confidence bins use a median split on average round-2 confidence across the three models.",
+                 ],
+diff --git a/scripts/test_architecture_a.py b/scripts/test_architecture_a.py
+index 96fc7c5..d456df8 100644
+--- a/scripts/test_architecture_a.py
++++ b/scripts/test_architecture_a.py
+@@ -25,6 +25,7 @@ load_dotenv(_project_root / ".env")
+ from src.data import load_kalshi_questions_csv
+ from src.agents.openai_agent import GPT4oAgent
+ from src.retrieval import ExaOracleRetriever
++from src.retrieval.keys import assert_packet_has_content, evidence_cache_key
+ from src.resolution.runner import MultiAgentRunner
+ 
+ 
+@@ -156,9 +157,11 @@ def get_evidence(
+     fulltext_max_characters: int,
+     highlights_max_characters: Optional[int],
+ ):
+-    cache_key = f"{retrieval_mode}__{row_uid}"
++    # FIX: key by the question, not by row_uid (which contains the row number of the input file)
++    cache_key = evidence_cache_key(retrieval_mode, question)
+     evidence = ExaOracleRetriever.load_from_cache(cache_key, cache_dir=cache_dir)
+     if evidence:
++        assert_packet_has_content(evidence)
+         return evidence, True
+ 
+     if cache_only:
+@@ -176,6 +179,7 @@ def get_evidence(
+         highlights_max_characters=highlights_max_characters,
+         cache_dir=cache_dir,
+     )
++    assert_packet_has_content(evidence)
+     return evidence, False
+ 
+ 
+diff --git a/scripts/test_architecture_b.py b/scripts/test_architecture_b.py
+index 921d293..b5b8e7b 100644
+--- a/scripts/test_architecture_b.py
++++ b/scripts/test_architecture_b.py
+@@ -25,6 +25,7 @@ from src.data import load_kalshi_questions_csv
+ from src.agents.openai_agent import GPT4oAgent
+ from src.resolution.debate import MultiLLMDebateRunner
+ from src.retrieval import ExaOracleRetriever
++from src.retrieval.keys import assert_packet_has_content, evidence_cache_key
+ 
+ 
+ EXA_COST_PER_QUESTION = 0.015
+@@ -213,9 +214,11 @@ def get_evidence(
+     fulltext_max_characters: int,
+     highlights_max_characters: Optional[int],
+ ):
+-    cache_key = f"{retrieval_mode}__{row_uid}"
++    # FIX: key by the question, not by row_uid (which contains the row number of the input file)
++    cache_key = evidence_cache_key(retrieval_mode, question)
+     evidence = ExaOracleRetriever.load_from_cache(cache_key, cache_dir=cache_dir)
+     if evidence:
++        assert_packet_has_content(evidence)
+         return evidence, True
+ 
+     if cache_only:
+@@ -233,6 +236,7 @@ def get_evidence(
+         highlights_max_characters=highlights_max_characters,
+         cache_dir=cache_dir,
+     )
++    assert_packet_has_content(evidence)
+     return evidence, False
+ 
+ 
+@@ -620,6 +624,12 @@ def main() -> int:
+     parser.add_argument("--category", help="Filter by category")
+     parser.add_argument("--cache-only", action="store_true", help="Only use cached evidence")
+     parser.add_argument("--cache-dir", default="cache/evidence", help="Evidence cache directory")
++    parser.add_argument(
++        "--evidence-render",
++        choices=["text", "titles"],
++        default="text",
++        help="text: show source highlights (fix). titles: title/URL/date only, reproduces the published runs.",
++    )
+     parser.add_argument(
+         "--retrieval-mode",
+         choices=["full_text", "highlights"],
+@@ -743,19 +753,19 @@ def main() -> int:
+         from src.agents.anthropic_agent import ClaudeAgent
+         from src.agents.google_agent import GeminiAgent
+ 
+-        runner = MultiLLMDebateRunner(agents=[GPT4oAgent(), ClaudeAgent(), GeminiAgent()])
++        runner = MultiLLMDebateRunner(evidence_render=args.evidence_render, agents=[GPT4oAgent(), ClaudeAgent(), GeminiAgent()])
+     elif args.use_claude:
+         from src.agents.anthropic_agent import ClaudeAgent
+         from src.agents.llama_agent import LlamaAgent
+ 
+-        runner = MultiLLMDebateRunner(agents=[GPT4oAgent(), ClaudeAgent(), LlamaAgent()])
++        runner = MultiLLMDebateRunner(evidence_render=args.evidence_render, agents=[GPT4oAgent(), ClaudeAgent(), LlamaAgent()])
+     elif args.use_gemini:
+         from src.agents.deepseek_agent import DeepSeekAgent
+         from src.agents.google_agent import GeminiAgent
+ 
+-        runner = MultiLLMDebateRunner(agents=[GPT4oAgent(), DeepSeekAgent(), GeminiAgent()])
++        runner = MultiLLMDebateRunner(evidence_render=args.evidence_render, agents=[GPT4oAgent(), DeepSeekAgent(), GeminiAgent()])
+     else:
+-        runner = MultiLLMDebateRunner()
++        runner = MultiLLMDebateRunner(evidence_render=args.evidence_render)
+ 
+     total_latency_ms: List[int] = []
+     resolution_time_ms: List[float] = []
+@@ -848,6 +858,7 @@ def main() -> int:
+             args.json_output,
+             use_claude=args.use_claude,
+             run_config={
++                "evidence_render": args.evidence_render,
+                 "retrieval_mode": args.retrieval_mode,
+                 "num_results": args.num_results,
+                 "fulltext_max_characters": args.fulltext_max_characters,
+diff --git a/src/resolution/debate/runner.py b/src/resolution/debate/runner.py
+index 86fe3d1..38df088 100644
+--- a/src/resolution/debate/runner.py
++++ b/src/resolution/debate/runner.py
+@@ -29,7 +29,13 @@ from .types import AgentDebateTrace, DebateAggregatedResolution, DebateRoundResp
+ class MultiLLMDebateRunner:
+     """Run two debate rounds across heterogeneous agents with shared evidence."""
+ 
+-    def __init__(self, agents: Optional[List[BaseAgent]] = None):
++    def __init__(self, agents: Optional[List[BaseAgent]] = None, evidence_render: str = "text"):
++        # "text": show each source's highlights/text, as Architecture A does (the fix).
++        # "titles": show title, URL and date only. This reproduces the published runs, where
++        # _format_exa_sources read the empty `source.text` field in highlights mode.
++        if evidence_render not in {"text", "titles"}:
++            raise ValueError(f"evidence_render must be 'text' or 'titles', got {evidence_render!r}")
++        self.evidence_render = evidence_render
+         if agents is None:
+             from src.agents import GPT4oAgent, DeepSeekAgent, LlamaAgent
+ 
+@@ -305,20 +311,30 @@ class MultiLLMDebateRunner:
+ 
+         return Decision.NO, "default_no"
+ 
+-    @staticmethod
+-    def _format_exa_sources(sources: List[Source]) -> str:
++    def _format_exa_sources(self, sources: List[Source]) -> str:
+         if not sources:
+             return "No evidence sources were retrieved."
+ 
++        render = getattr(self, "evidence_render", "text")
+         lines: List[str] = []
++        shown = 0
+         for idx, source in enumerate(sources, start=1):
+             lines.append(f"--- Source {idx} ---")
+             lines.append(f"Title: {source.title}")
+             lines.append(f"URL: {source.url}")
+             if source.published_date:
+                 lines.append(f"Published: {source.published_date}")
+-            lines.append(source.text)
++            if render == "text":
++                # FIX: the original appended `source.text`, which is empty in highlights mode.
++                content = source.content_for_prompt().strip()
++                shown += bool(content)
++                lines.append(content if content else "(No extractable content)")
++            else:
++                # Published behaviour, kept byte for byte for comparison runs.
++                lines.append(source.text)
+             lines.append("")
++        if render == "text" and shown == 0:
++            raise ValueError("No source carries text; refusing to run a titles-only debate by accident")
+         return "\n".join(lines)
+ 
+     @staticmethod
+diff --git a/src/retrieval/keys.py b/src/retrieval/keys.py
+new file mode 100644
+index 0000000..86b6791
+--- /dev/null
++++ b/src/retrieval/keys.py
+@@ -0,0 +1,28 @@
++"""Evidence cache keys and packet checks for the replication.
++
++The original scripts keyed the cache by row_uid, which contains the row number of the input file.
++Architectures A and B were run with different row numbering, so 315 of 1,153 shared questions were
++retrieved separately and the two architectures read different packets. The key below depends only on
++the question itself, so every run and every architecture reads the same packet.
++"""
++import hashlib
++
++
++def evidence_cache_key(retrieval_mode: str, question) -> str:
++    digest = hashlib.sha1(
++        "\x1f".join([str(question.id), " ".join(str(question.question).split()),
++                     " ".join(str(question.description).split())]).encode("utf-8")
++    ).hexdigest()[:12]
++    return f"{retrieval_mode}__q_{question.id}_{digest}"
++
++
++def assert_packet_has_content(evidence, min_share: float = 0.8) -> None:
++    """Fail loudly if most sources carry no text (titles-only evidence)."""
++    sources = list(getattr(evidence, "sources", []) or [])
++    if not sources:
++        return
++    with_text = sum(1 for s in sources if s.content_for_prompt().strip())
++    if with_text / len(sources) < min_share:
++        raise ValueError(
++            f"Evidence packet {evidence.question_id}: only {with_text} of {len(sources)} sources have text"
++        )
+diff --git a/tests/test_replication_fixes.py b/tests/test_replication_fixes.py
+new file mode 100644
+index 0000000..fca4e27
+--- /dev/null
++++ b/tests/test_replication_fixes.py
+@@ -0,0 +1,59 @@
++"""Regression tests for the two critical bugs found in the audit."""
++from types import SimpleNamespace
++
++import pytest
++
++from src.resolution.debate.runner import MultiLLMDebateRunner
++from src.retrieval.evidence import Source
++from src.retrieval.keys import assert_packet_has_content, evidence_cache_key
++
++
++def _highlight_sources():
++    return [Source(title=f"T{i}", url=f"https://e{i}.com", highlights=[f"fact number {i} from the article"]) for i in range(3)]
++
++
++def test_debate_prompt_contains_highlights():
++    r = MultiLLMDebateRunner(agents=[])
++    txt = r._format_exa_sources(_highlight_sources())
++    assert "fact number 0 from the article" in txt
++
++
++def _published_format(sources):
++    """The formatter as released at f76754b (runner.py lines 309-322)."""
++    lines = []
++    for idx, source in enumerate(sources, start=1):
++        lines.append(f"--- Source {idx} ---")
++        lines.append(f"Title: {source.title}")
++        lines.append(f"URL: {source.url}")
++        if source.published_date:
++            lines.append(f"Published: {source.published_date}")
++        lines.append(source.text)
++        lines.append("")
++    return "\n".join(lines)
++
++
++def test_titles_mode_reproduces_published_runs():
++    r = MultiLLMDebateRunner(agents=[], evidence_render="titles")
++    srcs = _highlight_sources()
++    txt = r._format_exa_sources(srcs)
++    assert "fact number" not in txt and txt == _published_format(srcs)
++
++
++def test_text_mode_refuses_titles_only_packet():
++    r = MultiLLMDebateRunner(agents=[])
++    with pytest.raises(ValueError):
++        r._format_exa_sources([Source(title="T", url="https://e.com")])
++
++
++def test_cache_key_does_not_depend_on_row_number():
++    q = SimpleNamespace(id="KXABC", question="Will  X happen?", description="Rule  text")
++    q2 = SimpleNamespace(id="KXABC", question="Will X happen?", description="Rule text")
++    q3 = SimpleNamespace(id="KXABC", question="Will X happen?", description="Other rule")
++    assert evidence_cache_key("highlights", q) == evidence_cache_key("highlights", q2)
++    assert evidence_cache_key("highlights", q) != evidence_cache_key("highlights", q3)
++
++
++def test_packet_without_text_is_rejected():
++    pk = SimpleNamespace(question_id="X", sources=[Source(title="T", url="https://e.com")] * 5)
++    with pytest.raises(ValueError):
++        assert_packet_has_content(pk)

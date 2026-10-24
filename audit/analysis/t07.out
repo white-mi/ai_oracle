@@ -1,0 +1,40 @@
+== Companies / World: A weighted vs B final (paired by file position; rows aligned?)
+share of file positions where A and B hold the same row: 0.971
+  Companies  n=49 A wtd 57.1 B final 67.3; A-only 1, B-only 6, exact McNemar p=0.125
+  World      n=29 A wtd 86.2 B final 89.7; A-only 1, B-only 2, exact McNemar p=1.000
+  Politics   n=298 A wtd 79.2 B final 73.5; A-only 32, B-only 15, exact McNemar p=0.019
+  Sports     n=265 A wtd 92.8 B final 83.0; A-only 27, B-only 1, exact McNemar p=0.000
+
+== Agent failures / missing values
+  A gpt4o: decision values {'NO': np.int64(863), 'YES': np.int64(326)}; conf NaN 0
+  B gpt4o: R1 {'NO': np.int64(930), 'YES': np.int64(259)} R2 {'NO': np.int64(954), 'YES': np.int64(235)}
+  A deepseek: decision values {'NO': np.int64(816), 'YES': np.int64(373)}; conf NaN 0
+  B deepseek: R1 {'NO': np.int64(920), 'YES': np.int64(269)} R2 {'NO': np.int64(924), 'YES': np.int64(265)}
+  A llama: decision values {'NO': np.int64(766), 'YES': np.int64(423)}; conf NaN 0
+  B llama: R1 {'NO': np.int64(876), 'YES': np.int64(313)} R2 {'NO': np.int64(902), 'YES': np.int64(287)}
+  columns A: ['gpt4o_error', 'deepseek_error', 'llama_error']
+  columns B: ['gpt4o_round1_latency_ms', 'gpt4o_round1_error', 'gpt4o_round2_latency_ms', 'gpt4o_round2_error', 'deepseek_round1_latency_ms', 'deepseek_round1_error', 'deepseek_round2_latency_ms', 'deepseek_round2_error', 'llama_round1_latency_ms', 'llama_round1_error', 'llama_round2_latency_ms', 'llama_round2_error', 'tie_break_method']
+    tie_break_method {'none': np.int64(1189)}
+
+== Llama confidence exactly 0 in A
+  rows 63; decisions {'NO': np.int64(63)}; Llama acc there 68.3; truth YES share 31.7
+  B R1: rows 362; decisions {'NO': np.int64(362)}; acc 70.7; truth YES share 29.3
+
+== Market's own page or other prediction markets among sources
+  packets 418; with a kalshi.com source 39 (9.3%); polymarket 18 (4.3%); any prediction-market site 59 (14.1%)
+  top domains (packets containing): [('en.wikipedia.org', 94), ('espn.com', 38), ('kalshi.com', 38), ('apnews.com', 38), ('reuters.com', 33), ('foxsports.com', 32), ('billboard.com', 29), ('nytimes.com', 28), ('washingtonpost.com', 25), ('usnews.com', 23), ('bbc.com', 21), ('fanduel.com', 20), ('quiverquant.com', 19), ('nbcnews.com', 19), ('finance.yahoo.com', 19), ('cnn.com', 18), ('teamrankings.com', 17), ('ballotpedia.org', 17), ('polymarket.com', 17), ('politico.com', 16), ('theglobeandmail.com', 16), ('abcnews.go.com', 16), ('yahoo.com', 15), ('usatoday.com', 15), ('cnbc.com', 14)]
+  kalshi source present  rows 56 A majority acc 75.0 recall YES 50.0 (n YES 26)
+  absent                 rows 495 A majority acc 83.0 recall YES 66.9 (n YES 181)
+
+== All three wrong in A (distinct rows)
+  distinct rows 1153; all three wrong 112 (9.7%), of which true YES 106
+  at least one model right among A-majority errors: 87 of 199
+
+== Confusion matrix A majority / A weighted / B final (file rows)
+  A majority     TP 327 FN 159 TN 659 FP 44 | recall YES 67.3 recall NO 93.7 precision YES 88.1 YES share 31.2
+  A weighted     TP 334 FN 152 TN 658 FP 45 | recall YES 68.7 recall NO 93.6 precision YES 88.1 YES share 31.9
+  B R1 majority  TP 241 FN 247 TN 670 FP 31 | recall YES 49.4 recall NO 95.6 precision YES 88.6 YES share 22.9
+  B final        TP 233 FN 255 TN 672 FP 29 | recall YES 47.7 recall NO 95.9 precision YES 88.9 YES share 22.0
+  A GPT-5 nano     recall YES 61.9 recall NO 96.4 YES share 27.4
+  A DeepSeek V3    recall YES 66.9 recall NO 93.2 YES share 31.4
+  A Llama 3.3 70B  recall YES 70.6 recall NO 88.6 YES share 35.6

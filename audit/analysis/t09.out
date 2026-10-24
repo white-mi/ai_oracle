@@ -1,0 +1,24 @@
+
+== SAME cache key in A and B (same packet guaranteed): rows 100
+  A        : GPT-5 nano: 3/19 from source text (15.8%), 1 from titles; DeepSeek V3: 48/142 from source text (33.8%), 7 from titles; Llama 3.3 70B: 17/40 from source text (42.5%), 3 from titles
+  B round 1: GPT-5 nano: 0/32 from source text (0.0%), 16 from titles; DeepSeek V3: 2/128 from source text (1.6%), 40 from titles; Llama 3.3 70B: 1/107 from source text (0.9%), 18 from titles
+  B round 2: GPT-5 nano: 0/29 from source text (0.0%), 7 from titles; DeepSeek V3: 1/112 from source text (0.9%), 8 from titles; Llama 3.3 70B: 0/97 from source text (0.0%), 1 from titles
+  accuracy: A majority 83.0; B R1 majority 79.0; B final 79.0; GPT-5 nano A 84.0 -> B R1 83.0; DeepSeek V3 A 84.0 -> B R1 80.0; Llama 3.3 70B A 82.0 -> B R1 77.0
+  A majority vs B R1 majority: A-only 8, B-only 4, p=0.388
+  YES share of majority: A 23.0 -> B R1 21.0; true 36.0; Llama conf==0: A 0 B R1 36
+  mean share of identical decisions A vs B R1 per model: 87.3%
+
+== DIFFERENT cache key (B re-queried Exa): rows 315
+  A        : GPT-5 nano: 18/59 from source text (30.5%), 11 from titles; DeepSeek V3: 148/428 from source text (34.6%), 14 from titles; Llama 3.3 70B: 53/170 from source text (31.2%), 4 from titles
+  B round 1: GPT-5 nano: 1/66 from source text (1.5%), 23 from titles; DeepSeek V3: 3/332 from source text (0.9%), 74 from titles; Llama 3.3 70B: 0/307 from source text (0.0%), 49 from titles
+  B round 2: GPT-5 nano: 1/57 from source text (1.8%), 15 from titles; DeepSeek V3: 0/321 from source text (0.0%), 12 from titles; Llama 3.3 70B: 0/271 from source text (0.0%), 1 from titles
+  accuracy: A majority 81.3; B R1 majority 75.2; B final 75.6; GPT-5 nano A 78.1 -> B R1 72.4; DeepSeek V3 A 80.6 -> B R1 75.9; Llama 3.3 70B A 77.8 -> B R1 75.9
+  A majority vs B R1 majority: A-only 31, B-only 12, p=0.0054
+  YES share of majority: A 32.4 -> B R1 23.8; true 41.6; Llama conf==0: A 18 B R1 88
+  mean share of identical decisions A vs B R1 per model: 84.9%
+
+== all 1,153 shared rows by cache-key identity
+  same key      n=838 A majority 83.3  B R1 majority 77.2  B final 76.4  (A-only 76, B-only 25, p=3.7e-07)
+  different key n=315 A majority 81.3  B R1 majority 75.2  B final 75.6  (A-only 31, B-only 12, p=0.0054)
+
+Glen Powell: A uid row0089_KXSNLHOST_ddc2b51a4839 | B uid row0189_KXSNLHOST_f5982df4d591

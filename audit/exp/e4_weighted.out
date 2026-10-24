@@ -1,0 +1,6 @@
+== haiku  (strata sizes {'err': 90, 'cy': 109, 'cn': 231})
+  all sampled rows: accuracy 82.6% [74.4, 89.4]; INSUFFICIENT 13.0%; wrong answers 4.3%; accuracy on answered 95.0%; vs fixed-packet Haiku -1.6 pp [-9.8, +5.3]
+  rows that never touched a market site: accuracy 81.9% [73.5, 89.0]; INSUFFICIENT 13.7%; wrong answers 4.3%; accuracy on answered 95.0%; vs fixed-packet Haiku -1.6 pp [-10.2, +5.5]
+== haiku_clean  (strata sizes {'err': 90, 'cy': 109, 'cn': 231})
+  all sampled rows: accuracy 89.1% [82.8, 94.1]; INSUFFICIENT 6.5%; wrong answers 4.3%; accuracy on answered 95.4%; vs fixed-packet Haiku +5.0 pp [-1.6, +10.2]
+  rows that never touched a market site: accuracy 88.4% [81.3, 93.8]; INSUFFICIENT 6.8%; wrong answers 4.8%; accuracy on answered 94.9%; vs fixed-packet Haiku +4.1 pp [-3.3, +9.9]

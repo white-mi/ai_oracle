@@ -1,0 +1,13 @@
+[deb haiku] 50/179 done, 142s, cost $1.23, errors 0
+[deb haiku] 100/179 done, 282s, cost $2.46, errors 0
+[deb haiku] 150/179 done, 419s, cost $3.68, errors 0
+[deb haiku] 179/179 done, 495s, cost $4.41, errors 0
+deb rows 179 non-unanimous 79 cost 4.41 errors 0
+[annot sonnet] 50/150 done, 52s, cost $1.72, errors 0
+[annot sonnet] 100/150 done, 170s, cost $2.87, errors 17
+[annot sonnet] 150/150 done, 393s, cost $2.87, errors 67
+annot rows 150 {nan: 67, 'SILENT': 45, 'STATES': 23, 'IMPLIES': 14, 'CONTRADICTS': 1} cost 2.87 errors 67
+[split haiku] 50/1290 done, 209s, cost $0.00, errors 50
+[split haiku] 100/1290 done, 391s, cost $0.00, errors 100
+[split haiku] 150/1290 done, 575s, cost $0.00, errors 150
+[split haiku] 200/1290 done, 774s, cost $0.00, errors 200

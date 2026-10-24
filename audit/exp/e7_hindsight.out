@@ -1,0 +1,14 @@
+runs 150; cited sources 464, of them with a date in the URL 82
+(a) runs citing a URL dated after close + 1 day: 14 (9%); median lag of the latest such URL 78 days
+(b) runs citing Wikipedia: 30 (20%)
+(c) runs whose search results mention a date after close + 1 day: 78 (52%), a date in 2026 or later: 41
+any of (a)-(c): 95 (63%); none detected: 55
+  with a hindsight signal        n= 95 right  80.0%  INSUFFICIENT   8.4%  wrong 11.6%
+  no hindsight signal detected   n= 55 right  83.6%  INSUFFICIENT   7.3%  wrong  9.1%
+  caution: the split is not random. Questions with rich later coverage (elections, sports) are also the easy ones.
+
+== strong signals only: a dated URL after close + 1 day, or Wikipedia
+  fixed-packet error strong signal    n= 22 right  77.3%  INSUFFICIENT   9.1%  wrong  13.6%
+  fixed-packet error none of (a)-(c)  n= 33 right  75.8%  INSUFFICIENT   9.1%  wrong  15.2%
+  control            strong signal    n= 17 right 100.0%  INSUFFICIENT   0.0%  wrong   0.0%
+  control            none of (a)-(c)  n= 22 right  95.5%  INSUFFICIENT   4.5%  wrong   0.0%

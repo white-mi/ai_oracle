@@ -1,0 +1,71 @@
+rows 179 | invalid h2: 0 | cost 4.41
+
+== NON-UNANIMOUS trios: n=79; true YES 44
+  Haiku round 1 69.6 | GPT-5 nano 43.0 | DeepSeek 57.0 | majority of 3 69.6 | weighted 70.9 | Haiku round 2 68.4
+  counts correct: h1 55, gpt 34, ds 45, maj 55, wtd 56, h2 54
+  flips 23 (29.1%): correct->wrong 12, wrong->correct 11; YES->NO 21, NO->YES 2
+    h2_ok vs h1_ok: h2_ok-only 11, h1_ok-only 12, exact McNemar p=1.000
+    h2_ok vs maj_ok: h2_ok-only 8, maj_ok-only 9, exact McNemar p=1.000
+    h2_ok vs wtd_ok: h2_ok-only 10, wtd_ok-only 12, exact McNemar p=0.832
+    maj_ok vs h1_ok: maj_ok-only 8, h1_ok-only 8, exact McNemar p=1.000
+                 n  flips  h1_right  h2_right  maj_right  c2w  w2c
+pos                                                               
+lone dissenter  16     11         8         9          8    5    6
+peers split     63     12        47        45         47    7    5
+
+== UNANIMOUS controls: n=100; true YES 37
+  Haiku round 1 90.0 | GPT-5 nano 90.0 | DeepSeek 90.0 | majority of 3 90.0 | weighted 90.0 | Haiku round 2 90.0
+  counts correct: h1 90, gpt 90, ds 90, maj 90, wtd 90, h2 90
+  flips 0 (0.0%): correct->wrong 0, wrong->correct 0; YES->NO 0, NO->YES 0
+    h2_ok vs h1_ok: h2_ok-only 0, h1_ok-only 0, exact McNemar p=1.000
+    h2_ok vs maj_ok: h2_ok-only 0, maj_ok-only 0, exact McNemar p=1.000
+    h2_ok vs wtd_ok: h2_ok-only 0, wtd_ok-only 0, exact McNemar p=1.000
+    maj_ok vs h1_ok: maj_ok-only 0, h1_ok-only 0, exact McNemar p=1.000
+                    n  flips  h1_right  h2_right  maj_right  c2w  w2c
+pos                                                                  
+both peers agree  100      0        90        90         90    0    0
+
+lone dissenter Haiku: right in round 1: 8 of 16 | kept answer: 5 | when right kept 3 of 8 | when wrong flipped 6 of 8
+  lone dissenter by Haiku's own answer: {'NO': {'n': 2, 'flips': 0, 'right1': 1, 'right2': 1}, 'YES': {'n': 14, 'flips': 11, 'right1': 7, 'right2': 8}}
+peers split: Haiku right r1 47 of 63 | flips 12 | right r2 45
+revised flag true: 32 | actual flips 23 | mismatch 9
+confidence: mean h1 0.824 mean h2 0.828 | non-unanimous h1 0.807 h2 0.778 | unanimous h1 0.837 h2 0.868
+flip rate by own round-1 confidence (non-unanimous): {Interval(-0.01, 0.6, closed='right'): {'n': 10, 'flips': 2}, Interval(0.6, 0.85, closed='right'): {'n': 33, 'flips': 14}, Interval(0.85, 0.95, closed='right'): {'n': 21, 'flips': 6}, Interval(0.95, 1.0, closed='right'): {'n': 15, 'flips': 1}}
+
+all 430 rows: non-unanimous 79, unanimous 351 (100 sampled; flips among sampled 0, c2w 0, w2c 0)
+  h1   accuracy 84.0 (361/430)
+  gpt  accuracy 79.1 (340/430)
+  ds   accuracy 81.6 (351/430)
+  maj  accuracy 84.0 (361/430)
+  h2   accuracy 83.7 (360/430)
+  h2 vs maj: 8 vs 9, p=1.000; diff -0.23 pp [-2.11, +1.62]
+  h2 vs h1: 11 vs 12, p=1.000; diff -0.23 pp [-2.36, +2.07]
+  maj vs h1: 8 vs 8, p=1.000; diff +0.00 pp [-1.84, +1.86]
+  published B on the same 430 rows, gpt4o: flips 19, acc r1 74.4 r2 74.2
+  published B on the same 430 rows, deepseek: flips 7, acc r1 76.0 r2 76.7
+  published B on the same 430 rows, llama: flips 14, acc r1 75.8 r2 76.7
+
+examples of flips (non-unanimous):
+  truth YES | h1 YES (0.95) -> h2 NO (0.72) | gpt NO ds YES | Will the maximum SP500 value reach 6599.99 by Jan 1, 2026? || Agent A and I both initially answered YES based on Source 1's all-time high of $7,008.1, but we failed to notice this high occurred on January 28, 2026 - after the January 1, 2026 window end date. Agent B's critical observation about timing and the need for evidence within the specified window is te
+  truth YES | h1 YES (0.75) -> h2 NO (0.55) | gpt NO ds NO | How high will Bitcoin Cash get this year? || Agents A and B both reached NO with low confidence (0.33 and 0.3), identifying the same critical flaw: the sources provide predictions rather than confirmed historical prices from the resolution window. I initially disagreed by treating forecasts as evidence. Upon re-examination, both agents correct
+  truth NO | h1 YES (0.72) -> h2 NO (0.62) | gpt NO ds NO | Will the Conservative Party (H) win more than 31 seats in the 2025 Norwegian gen || Both Agent A and Agent B reach NO conclusions, while I initially concluded YES. Upon review, both other agents correctly identified a critical weakness in my reasoning: Source 7's data is presented ambiguously and could be a forecast rather than certified official results. Source 5, the most contemp
+  truth NO | h1 YES (0.72) -> h2 NO (0.68) | gpt NO ds YES | How long will I'm The Problem be #1? || Agent A and I agreed on YES, but Agent B correctly challenged the interpretation. Upon re-examination, Agent B's argument is stronger: the resolution requires MORE than 8 weeks (i.e., 9+), and the sources only explicitly confirm through 8 consecutive weeks. The phrase "two months" is imprecise and d
+  truth NO | h1 YES (0.72) -> h2 NO (0.78) | gpt NO ds NO | Will PumpFun conduct an airdrop before Sep 1, 2025? || Agents A and B both correctly identified the critical evidence: the founder's explicit statements on July 23-24, 2025 denying that any airdrop occurred or will occur in the near term. My Round 1 analysis over-weighted the ambiguous language in Source 6 about tokens being "airdropped" and failed to r
+  truth NO | h1 YES (0.75) -> h2 NO (0.6) | gpt NO ds NO | Will the New England pro football team win more than 15 times this season? || Both Agent A and Agent B correctly identified that Source 2's 16-3 is a projection, not an outcome—a distinction I failed to make in Round 1. My fundamental error was misclassifying a simulation forecast as actual results. While the Washington Post projection of 16-3 would satisfy the YES threshold,
+  truth NO | h1 YES (0.72) -> h2 NO (0.6) | gpt YES ds NO | How much will the Republican reconcilliation bill cut the Inflation Reduction Ac || Agent A and I now converge on NO due to the lack of explicit evidence that a bill became law (as opposed to merely passing the Senate). Agent B maintains YES by accepting the $500 billion figure and Senate passage as sufficient, but does not address the critical distinction between passage and enact
+  truth NO | h1 NO (0.35) -> h2 YES (0.78) | gpt NO ds YES | What will Roku, Inc. say during their next earnings call? || Agent B's reasoning is superior because it identifies specific, credible evidence (Source 3 Reuters) confirming tariff mentions. Agent A and I both missed that Reuters, as a listed news publication, provides valid documentation of the earnings call content per the resolution criteria. Agent B correc
+  truth NO | h1 YES (0.92) -> h2 NO (0.85) | gpt NO ds NO | Who will be the next coach out in pro men's basketball? || Both Agent A and Agent B correctly identified the same critical error in my reasoning: I misapplied the resolution criteria. The requirement is that the Spurs coach be the FIRST out, not merely depart before Jan 1, 2027. Multiple coaches (Griffin, Unseld Jr., Vaughn in 2023-24, and Jenkins in late 2
+  truth YES | h1 YES (0.95) -> h2 NO (0.75) | gpt NO ds YES | Will Elon Musk tag Donald Trump in a post on X in Nov 2025? || Agent A was correct despite expressing uncertainty; Agent B agreed with my Round 1 answer but made a fundamental error in date interpretation (claiming June 11 falls within November 2025). I initially conflated article publication dates with actual event dates. The evidence clearly shows the @realDo
+  truth YES | h1 YES (0.75) -> h2 NO (0.68) | gpt NO ds YES | Filibuster weakened before 2026 || Agent B and I now converge on NO. Agent A argues YES by treating nomination rule changes as equivalent to legislative action rule changes, but this conflates two distinct Senate procedures. The critical evidence is Source 4's explicit statement that "the 60-vote threshold to pass most legislation ha
+  truth NO | h1 YES (0.92) -> h2 NO (0.75) | gpt NO ds NO | Will BRICS invite a new member to join them at their next summit? || Both Agent A and Agent B reached the correct NO conclusion, with Agent B providing more precise textual support. The key disagreement with my Round 1 answer was my failure to treat the "member" vs. "partner state" distinction as material. Agents B and A correctly emphasized that the sources explicit
+  truth NO | h1 YES (0.65) -> h2 NO (0.75) | gpt NO ds NO | Los Angeles L at Milwaukee: Total Points || Both Agent A and Agent B disagreed with my YES answer, correctly identifying that no source explicitly references a November 15, 2025 game between the Bucks and Lakers. They are right. My Round 1 reasoning made an unjustified assumption by speculating that Source 10's 131-116 game (247 total points)
+  truth NO | h1 YES (0.95) -> h2 NO (0.6) | gpt NO ds YES | Will there be more than 800 delays and cancellations at O'Hare on November 11, 2 || Agent A and I both made the same error: treating Source 1's data as pertaining to November 11 when it actually refers to November 10. Agent B correctly identified this temporal discrepancy. While Agent A and I both reached YES with 0.95 confidence, Agent B's NO answer with 0.55 confidence is more de
+  truth YES | h1 YES (0.72) -> h2 NO (0.68) | gpt YES ds NO | Will Completely eliminate the IRA's EV tax credits be in the next reconcilliatio || Agent A and I now converge on NO, though Agent A held this position in round 1. Agent B's YES answer appears to underweight the temporal requirement in the resolution criteria. The key evidentiary point is Source 5's explicit statement that House version allows credits "through the end of 2026" for 
+  truth YES | h1 YES (0.92) -> h2 NO (0.38) | gpt NO ds NO | How many pro football games will Taylor Swift attend this season? || Both agents correctly identified the critical gap in evidence: no actual 2025-26 season attendance data is provided in the packet. Agent A and B converge on NO due to lack of confirming evidence, though both maintain low confidence (0.25-0.3) recognizing the probabilistic nature. My revision to NO r
+  truth YES | h1 YES (0.72) -> h2 NO (0.65) | gpt NO ds YES | How much will the Republican reconcilliation bill cut education spending? || Agent A and I now converge on NO (revised from my original YES). Agent B disagrees, arguing the bill likely became law. The key disagreement centers on interpreting the evidence: Agent A and I emphasize that no evidence shows the bill actually became law, while Agent B treats legislative momentum an
+  truth YES | h1 YES (0.85) -> h2 NO (0.75) | gpt NO ds NO | Ulsan HD FC vs Suwon FC Winner? || Agents A and B both concluded NO, and upon re-examination, they are correct. My error in Round 1 was misinterpreting an ambiguous display element on a prediction page (published before the match) as a confirmed post-match result. The publication date and predictive framing of Source 3 should have al
+  truth NO | h1 YES (0.99) -> h2 NO (0.6) | gpt NO ds YES | between 80 to 84 Labor seats won? || Agent A and I initially agreed (YES, high confidence), while Agent B disagreed (NO, 0.65 confidence). Upon reflection, Agent B's critique regarding the temporal interpretation of "next election" is sound and reveals a critical flaw in my Round 1 reasoning. Without predictive evidence for a future el
+  truth YES | h1 NO (0.35) -> h2 YES (0.55) | gpt YES ds NO | Will the SOL/ETH ratio be above .05 before Jan 1, 2026? || Agent A and I initially agreed on NO but for weak evidentiary reasons (absence of definitive data). Agent B argued YES based on reasonable inference from SOL price forecasts. Upon critical re-examination of Source 8's specific pricing data (SOL at ~$127 on Jan 21, 2026 with YTD high ~$148), I found 
+  truth YES | h1 YES (0.85) -> h2 NO (0.7) | gpt NO ds YES | Top USA Song on Spotify on Nov 15, 2025? || Disagreement with Agent A (who said YES with 0.95 confidence). Agent A incorrectly treats Billboard Hot 100 and Spotify's Daily Top Songs USA chart as equivalent. Agent B (who said NO with 0.35 confidence) correctly identified that the resolution criteria specify a particular chart (Spotify Daily, n
+  truth YES | h1 YES (0.62) -> h2 NO (0.45) | gpt NO ds NO | Will Trump end the electric vehicle tax credit before Jan 20, 2029? || Both Agent A and Agent B reached NO with 65-70% confidence using the same logic: sources show intent but no evidence of actual elimination. I initially answered YES based on favorable conditions and time remaining, but this conflated likelihood of action with proof of action. The agents correctly id
+  truth YES | h1 YES (0.85) -> h2 NO (0.75) | gpt NO ds NO | Will Volodymyr Zelenskyy visit the White House before Jan 1, 2026? || I now agree with both Agent A and Agent B that there is insufficient evidence of a White House visit occurring between May 2, 2025 and Jan 1, 2026. My previous reasoning relied on an overinterpretation of Source 1's ambiguous reference to a "Monday summit." The only explicitly dated visit after mid-

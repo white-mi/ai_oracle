@@ -1,0 +1,25 @@
+questions run twice in file A: 36 | rows: 72
+positions of copies (file index): first [np.int64(115), np.int64(117), np.int64(136), np.int64(146), np.int64(166)] ... second copies min index 124
+GPT-5 nano     same decision in 35/36 (97%); mean |conf diff|=0.079; identical confidence in 7
+DeepSeek V3    same decision in 35/36 (97%); mean |conf diff|=0.108; identical confidence in 16
+Llama 3.3 70B  same decision in 31/36 (86%); mean |conf diff|=0.075; identical confidence in 28
+all models: decisions differ in 7/108 = 6.5% of repeated calls
+majority differs in 0 of 36 ; weighted differs in 0
+identical GPT reasoning text in 0 pairs (0 => independent calls)
+
+Other result files in repo:
+  results/Final_Architecture_A_results.csv                       rows= 1189 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/Final_Architecture_B_results.csv                       rows= 1189 decision cols=['gpt4o_round1_decision', 'gpt4o_round2_decision', 'deepseek_round1_decision', 'deepseek_round2_decision', 'llama_round1_decision', 'llama_round2_decision']
+  results/architecture_a_results.csv                             rows=  450 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/architecture_a_results/architecture_a_example.csv      rows=    1 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/architecture_a_results/architecture_a_first100.csv     rows=  100 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/architecture_a_results/architecture_a_fourth_100.csv   rows=  100 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/architecture_a_results/architecture_a_last50.csv       rows=   50 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/architecture_a_results/architecture_a_next100.csv      rows=    0 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/architecture_a_results/architecture_a_results_deepseek_3.csv rows=    3 decision cols=['gpt4o_decision', 'deepseek_decision', 'gemini_decision', 'final_decision']
+  results/architecture_a_results/architecture_a_results_legacy.csv rows=    3 decision cols=['gpt4o_decision', 'claude_decision', 'gemini_decision', 'final_decision']
+  results/architecture_a_results/architecture_a_second_100.csv   rows=  100 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/architecture_a_results/architecture_a_third_100.csv    rows=  100 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/architecture_a_results_complement_filtered.csv         rows=  739 decision cols=['gpt4o_decision', 'deepseek_decision', 'llama_decision', 'final_decision']
+  results/kalshibench_subset_450_seed42.csv                      rows=  450 decision cols=[]
+  results/kalshibench_subset_500_seed42.csv                      rows=  500 decision cols=[]

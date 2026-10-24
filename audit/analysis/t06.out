@@ -1,0 +1,41 @@
+== 1. Reasoning text that says the evidence has titles only / no content
+analysis/t06_examples.py:12: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  rows.append(dict(model=NAMES[m], A=int(a.str.contains(pat).sum()), B_round1=int(b1.str.contains(pat).sum()), B_round2=int(b2.str.contains(pat).sum()),
+analysis/t06_examples.py:12: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  rows.append(dict(model=NAMES[m], A=int(a.str.contains(pat).sum()), B_round1=int(b1.str.contains(pat).sum()), B_round2=int(b2.str.contains(pat).sum()),
+analysis/t06_examples.py:12: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  rows.append(dict(model=NAMES[m], A=int(a.str.contains(pat).sum()), B_round1=int(b1.str.contains(pat).sum()), B_round2=int(b2.str.contains(pat).sum()),
+        model  A  B_round1  B_round2  A_len  B1_len
+   GPT-5 nano  0         7        12    634     788
+  DeepSeek V3  2        83        29    742    1061
+Llama 3.3 70B  1        10        11    465    1051
+analysis/t06_examples.py:15: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  anyA = np.any([A[f"{m}_reasoning"].astype(str).str.contains(pat).values for m in M], axis=0)
+analysis/t06_examples.py:15: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  anyA = np.any([A[f"{m}_reasoning"].astype(str).str.contains(pat).values for m in M], axis=0)
+analysis/t06_examples.py:15: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  anyA = np.any([A[f"{m}_reasoning"].astype(str).str.contains(pat).values for m in M], axis=0)
+analysis/t06_examples.py:16: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  anyB = np.any([B[f"{m}_round1_reasoning"].astype(str).str.contains(pat).values for m in M], axis=0)
+analysis/t06_examples.py:16: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  anyB = np.any([B[f"{m}_round1_reasoning"].astype(str).str.contains(pat).values for m in M], axis=0)
+analysis/t06_examples.py:16: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  anyB = np.any([B[f"{m}_round1_reasoning"].astype(str).str.contains(pat).values for m in M], axis=0)
+rows where at least one agent says so: A 3 of 1189 (0.3%), B round 1 98 of 1189 (8.2%)
+  [GPT-5 nano] ...y" was spoken during the next Circle earnings call corresponding to the February 25, 2026 event or any subsequent call. Since the next earnings call’s verbatim content is not included in the evidence and there is no explicit confirmation of the term, we cannot determine that Treasury will be said based on the supplied sources. Therefore, bas...
+  [DeepSeek V3] ... resolve to YES. Analyzing the provided evidence: Source 1 is a Senate roll call vote from September 18, 2025 that would contain the actual vote count, but the content is not provided in the evidence snippet. Sources 2, 3, and 4 all confirm that Mike Waltz was confirmed as UN Ambassador on September 19, 2025, but none provide the specific vo...
+  [Llama 3.3 70B] ...rces 1 and 2, it appears that Labor might not be on track to win the prime ministry based on polling data. However, since the actual outcome of the election is not provided in the evidence, and polls can be incorrect, the confidence in this decision is not absolute. Therefore, based on the available evidence and the resolution criteria, the decis...
+  [GPT-5 nano] ...he next session; combined with Polls showing Dutton as the leading candidate, the first PM post-election is very likely to be Liberal/National Coalition. While no excerpt provides an explicit final outcome, the weight of polling and official election context supports the conclusion that the first PM would be from the Liberal/Nat...
+  [DeepSeek V3] ...nts for S.Con.Res.7, the budget resolution passed in February 2025. Source 2 indicates the vote was 51-49, and Source 10 (which appears to be a placeholder URL without content, but based on context likely refers to the same vote) would typically show a similar result. Source 1 confirms the Senate passed the resolution but does not sp...
+  [DeepSeek V3] ...cial media, and includes being voted off, evicted, etc. 2. I analyzed all provided sources: Sources 1-4 (published Nov 13, 2025) are episode 8 recaps but their content is not provided in the evidence, so they cannot confirm Steven Ramm's elimination. Sources 5-6 (published Nov 6, 2025) refer to an earlier episode (likely episode 7 or prior) ...
+  [Llama 3.3 70B] ...otify's Daily Top Songs USA chart. Sources 2, 3, 4, and 5 could potentially provide relevant information, but the actual data or rankings for Nov 15, 2025, are not provided in the evidence. Source 6 is a Spotify playlist but does not offer any specific ranking or chart data for the date in question. Without direct evidence from Spotify's Daily To...
+
+== 2. The four worked examples of the paper
+
+--- Retrieval failure example (p.17, Row 0189)
+
+--- Temporal reasoning example (p.17, Row 0726)
+
+--- Hallucination example (p.17)
+
+--- Shared bias example (p.18)

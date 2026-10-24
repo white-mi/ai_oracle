@@ -1,0 +1,82 @@
+430 rows; close Aug-Nov 2025: 340; base rate NO 59.5%
+
+== 1. Closed book (no evidence): leak check
+  haiku     n=430 acc 63.7% AUC 0.63 Brier 0.272 | May-Jul: acc 56.7% AUC 0.59 (n=90) | Aug-Nov: acc 65.6% AUC 0.65 (n=340)
+  sonnet    n=430 acc 86.0% AUC 0.93 Brier 0.105 | May-Jul: acc 90.0% AUC 0.96 (n=90) | Aug-Nov: acc 85.0% AUC 0.92 (n=340)
+  sonnet45  n=430 acc 65.1% AUC 0.65 Brier 0.295 | May-Jul: acc 57.8% AUC 0.70 (n=90) | Aug-Nov: acc 67.1% AUC 0.65 (n=340)
+  haiku55   n=430 acc 84.2% AUC 0.91 Brier 0.122 | May-Jul: acc 91.1% AUC 0.94 (n=90) | Aug-Nov: acc 82.4% AUC 0.89 (n=340)
+
+== 2. Sonnet 4.5 with the paper's prompt A and full text (rep1)
+  all 430: Sonnet 4.5 80.5% vs Haiku 4.5 84.2% (13 vs 29, p=0.020); recall YES 64.9 vs 70.1; recall NO 91.0 vs 93.8
+  Aug-Nov only: Sonnet 4.5 79.1% vs Haiku 4.5 83.2% (11 vs 25, p=0.029); recall YES 61.5 vs 66.2; recall NO 90.0 vs 93.8
+  error correlation (Aug-Nov rows):
+          haiku45  sonnet45  gpt5nano  deepseek  llama
+haiku45      1.00      0.66      0.73      0.66   0.57
+sonnet45     0.66      1.00      0.64      0.70   0.61
+gpt5nano     0.73      0.64      1.00      0.64   0.52
+deepseek     0.66      0.70      0.64      1.00   0.64
+llama        0.57      0.61      0.52      0.64   1.00
+  majority votes (Aug-Nov rows):
+    haiku45+sonnet45+gpt5nano                     82.1%  best single haiku45 83.2%  (4 vs 8, p=0.39)
+    haiku45+sonnet45+deepseek                     81.8%  best single haiku45 83.2%  (7 vs 12, p=0.36)
+    gpt5nano+deepseek+llama                       81.5%  best single deepseek 81.5%  (6 vs 6, p=1.00)
+    haiku45+sonnet45+gpt5nano+deepseek+llama      81.2%  best single haiku45 83.2%  (6 vs 13, p=0.17)
+
+== 5. Annotation of packets (149 labelled)
+label             CONTRADICTS  IMPLIES  SILENT  STATES  All
+grp        truth                                           
+both wrong NO               0        4       5       1   10
+           YES              1        1      42       2   46
+control    NO               0        6      12      12   30
+           YES              0        2       2      26   30
+haiku only NO               0        3       3       0    6
+           YES              0        0       2       3    5
+paper only NO               0        0       5       4    9
+           YES              0        7       4       2   13
+All                         1       23      75      50  149
+
+== 6. Agentic search oracle [haiku], 150 rows
+                   n  agent_right  insufficient  fixed_haiku_right  paper_right  searches  market_site
+grp        truth                                                                                      
+both wrong NO     10            3             3                  0            0      3.60            0
+           YES    47           28            11                  0            0      3.62            3
+control    NO     30           26             4                 30           30      3.03            2
+           YES    30           27             2                 30           30      2.63            2
+haiku only NO      6            4             2                  0            6      3.17            1
+           YES     5            3             0                  0            5      2.80            2
+paper only NO      9            6             2                  9            0      3.33            0
+           YES    13           13             0                 13            0      3.38            5
+  agent result by packet label:
+              n  agent_right  insufficient  fixed_haiku_right
+label                                                        
+CONTRADICTS   1            1             0                  0
+IMPLIES      23           17             3                 15
+SILENT       75           45            21                 23
+STATES       50           46             0                 44
+  without rows that touched market sites: n=135, agent right 99, fixed-packet Haiku right 73
+  weighted estimate over all 430 rows: agent accuracy 82.6% (INSUFFICIENT 13.0%) vs fixed-packet Haiku 84.2%, paper majority 81.6%
+  strata: error rows 90 (sampled 90), correct YES 109 (sampled 30), correct NO 231 (sampled 30)
+  cost 9.65 mean searches 3.22 models used {'claude-haiku-4-5-20251001,claude-haiku-5-5': 150}
+
+== 6. Agentic search oracle [haiku_clean], 150 rows
+                   n  agent_right  insufficient  fixed_haiku_right  paper_right  searches  market_site
+grp        truth                                                                                      
+both wrong NO     10            2             2                  0            0      4.10            0
+           YES    47           39             4                  0            0      3.45            7
+control    NO     30           28             2                 30           30      2.83            3
+           YES    30           28             1                 30           30      2.73            3
+haiku only NO      6            5             1                  0            6      3.50            3
+           YES     5            2             0                  0            5      3.20            1
+paper only NO      9            6             2                  9            0      3.56            0
+           YES    13           12             0                 13            0      3.08            3
+  agent result by packet label:
+              n  agent_right  insufficient  fixed_haiku_right
+label                                                        
+CONTRADICTS   1            1             0                  0
+IMPLIES      23           18             2                 15
+SILENT       75           55            10                 23
+STATES       50           47             0                 44
+  without rows that touched market sites: n=130, agent right 105, fixed-packet Haiku right 73
+  weighted estimate over all 430 rows: agent accuracy 89.1% (INSUFFICIENT 6.5%) vs fixed-packet Haiku 84.2%, paper majority 81.6%
+  strata: error rows 90 (sampled 90), correct YES 109 (sampled 30), correct NO 231 (sampled 30)
+  cost 14.75 mean searches 3.19 models used {'claude-haiku-4-5-20251001': 150}

@@ -1,0 +1,6 @@
+signal                       tied rows  stable  random(mean of 1000)  best  worst
+paper composite (3 models)     84.9%   0.0695   0.0684 [0.0673, 0.0699]   0.0663  0.0710
+Haiku stated confidence        99.3%   0.0487   0.0493 [0.0480, 0.0506]   0.0438  0.0552
+Haiku bare P(YES)              97.7%   0.0448   0.0467 [0.0440, 0.0534]   0.0396  0.0615
+difference bare P(YES) minus paper composite under independent random tie-breaks: mean -0.0218, 95% of draws in [-0.0250, -0.0152]
+worst case for Haiku vs best case for paper: -0.0047

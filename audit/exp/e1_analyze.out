@@ -1,0 +1,45 @@
+rows 430 missing decisions: {'HA': 1, 'HB': 1, 'TA': 0, 'TB': 0}
+
+== accuracy, YES share, recall
+content + prompt A (as published A)              acc=84.2% [80.6,87.6]  YES share=32.1%  recall YES=70.1%  recall NO=93.8%  mean confidence=0.845  conf==0: 0
+content + prompt B                               acc=84.0% [80.4,87.4]  YES share=32.8%  recall YES=70.7%  recall NO=93.0%  mean confidence=0.850  conf==0: 0
+titles only + prompt A                           acc=77.0% [72.9,80.9]  YES share=26.3%  recall YES=54.0%  recall NO=92.6%  mean confidence=0.630  conf==0: 2
+titles only + prompt B (as published B round 1)  acc=79.3% [75.2,83.1]  YES share=27.2%  recall YES=58.0%  recall NO=93.8%  mean confidence=0.642  conf==0: 0
+true YES share 0.405 n YES 174
+
+== paired contrasts (exact McNemar; difference with cluster-bootstrap 95% CI)
+content effect under prompt A                              HA-only= 51 TA-only= 20 diff=+7.2 pp [+3.7,+11.0] p=0.0003
+content effect under prompt B                              HB-only= 41 TB-only= 21 diff=+4.7 pp [+1.1,+8.2] p=0.015
+prompt effect with content                                 HA-only= 13 HB-only= 12 diff=+0.2 pp [-2.1,+2.6] p=1
+prompt effect with titles only                             TA-only=  8 TB-only= 18 diff=-2.3 pp [-4.7,+0.0] p=0.076
+published A design vs published B round-1 design           HA-only= 43 TB-only= 22 diff=+4.9 pp [+1.4,+8.6] p=0.013
+main effect of content: +5.9 pp CI [2.8 9.3]; main effect of prompt A vs B: -1.0 pp CI [-2.6  0.6]
+  recall on true YES, HA vs TA: 70.1% vs 54.0%  (HA-only 35, TA-only 7, p=1.5e-05)
+  recall on true YES, HB vs TB: 70.7% vs 58.0%  (HB-only 30, TB-only 8, p=0.00047)
+  recall on true YES, HA vs HB: 70.1% vs 70.7%  (HA-only 6, HB-only 7, p=1)
+
+== decision changes when content is removed
+  HA->TA: YES->NO 48, NO->YES 22, unchanged 359
+  HB->TB: YES->NO 43, NO->YES 18, unchanged 368
+
+== same rows, published runs of the paper
+  A: GPT-5 nano 79.1%, DeepSeek V3 81.6%, Llama 3.3 70B 78.8%; majority 81.6%
+  B round 1: GPT-5 nano 74.4%, DeepSeek V3 76.0%, Llama 3.3 70B 75.8%; majority 76.0%; B final 76.3%
+  GPT-5 nano     A minus B round 1 = +4.7 pp; YES share 26.0% -> 22.8%; recall YES 56.3% -> 46.6%
+  DeepSeek V3    A minus B round 1 = +5.6 pp; YES share 30.9% -> 23.0%; recall YES 65.5% -> 48.9%
+  Llama 3.3 70B  A minus B round 1 = +3.0 pp; YES share 36.5% -> 27.0%; recall YES 69.0% -> 53.4%
+  Haiku 4.5: content minus titles (prompt B) = +4.7 pp; YES share 32.8% -> 27.2%; recall YES 70.7% -> 58.0%
+
+== agreement of Haiku with the published models (same evidence, prompt A)
+  Haiku HA vs GPT-5 nano (A): same decision 89.1%; error correlation 0.654
+  Haiku HA vs DeepSeek V3 (A): same decision 89.8%; error correlation 0.650
+  Haiku HA vs Llama 3.3 70B (A): same decision 87.0%; error correlation 0.587
+  Haiku TB vs published B round-1 decisions: GPT-5 nano 87.2%, DeepSeek V3 87.9%, Llama 3.3 70B 87.2%
+
+== where do Haiku's direct quotations come from (validation of the tracing method)
+  HA: quotations=391, from titles=5, from source text only=102 (26.1%)
+  HB: quotations=582, from titles=13, from source text only=138 (23.7%)
+  TA: quotations=356, from titles=113, from source text only=3 (0.8%)
+  TB: quotations=477, from titles=137, from source text only=0 (0.0%)
+
+cost of experiment 1: $ 24.45

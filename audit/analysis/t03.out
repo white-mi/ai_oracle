@@ -1,0 +1,60 @@
+== 1. Trivial baselines on the 1,153 distinct rows of file A
+n=1153 YES share=0.412; always-NO accuracy=58.80; A majority=82.74; weighted=83.26
+  GPT-5 nano     acc=82.22 YES-rate=27.6 recall YES=61.9 recall NO=96.5
+  DeepSeek V3    acc=82.31 YES-rate=31.5 recall YES=66.7 recall NO=93.2
+  Llama 3.3 70B  acc=81.18 YES-rate=35.9 recall YES=70.7 recall NO=88.5
+majority errors=199: false NO=155 (78%), false YES=44; precision of YES answers=87.9% (n=364); precision of NO answers=80.4% (n=789)
+by vote pattern (YES votes): 0 votes: n=686 true-YES share=15%; 1 votes: n=103 true-YES share=48%; 2 votes: n=100 true-YES share=62%; 3 votes: n=264 true-YES share=98%
+
+== 2. Query design: rows whose question text is shared with a sibling row (query lacks the specific outcome)
+  shared generic question text   n= 523 acc=81.6 recall YES=57.5 (n=179) recall NO=94.2 YES share=34%
+  unique question text           n= 630 acc=83.7 recall YES=73.3 (n=296) recall NO=92.8 YES share=47%
+   e.g. KX60MINMENTION | Q: What will Donald Trump say during next interview on 60 Minut | rules: If Donald Trump says Maduro as part of next interview on 60 Minutes with Donald Trump, the
+   e.g. KX60MINMENTION | Q: What will Donald Trump say during next interview on 60 Minut | rules: If Donald Trump says Soybean as part of next interview on 60 Minutes with Donald Trump, th
+   e.g. KXACOOPERMENTION | Q: What will Anderson Cooper say during Anderson Cooper 360 on  | rules: If Anderson Cooper says Tariff as part of Anderson Cooper 360 on November 13th, then the m
+   e.g. KXACOOPERMENTION | Q: What will Anderson Cooper say during Anderson Cooper 360 on  | rules: If Anderson Cooper says Trump as part of Anderson Cooper 360 on November 13th, then the ma
+  Fisher p (recall on YES, shared vs unique): 0.0006 [[103, 76], [217, 79]]
+
+== 3. Evidence dating in the cached packets (file A rows that map to a committed packet)
+rows of A (distinct) with a committed packet: 551 of 1153; packets used: 413; accuracy on them 82.2
+packets: median sources=10, median dated=9; share of rows whose packet has NO source dated >= close-1d: 56.4%; median 'newest source minus close' = -1.8 days; median of median lag = -59 days
+  late source present  n= 240 acc=87.1  recall YES=65/88=73.9%  recall NO=94.7%  unanimous share=85%
+  no late source       n= 311 acc=78.5  recall YES=69/119=58.0%  recall NO=91.1%  unanimous share=77%
+  Fisher p (recall YES, late vs none): 0.01928 [[65, 23], [69, 50]]
+  by newest-source lag (days relative to close):
+                     n    acc  yes_share  pred_yes
+newest_lag                                        
+(-10000.0, -30.0]   95  0.684      0.432     0.305
+(-30.0, -7.0]      100  0.840      0.290     0.210
+(-7.0, -1.0]       114  0.816      0.430     0.316
+(-1.0, 0.0]        174  0.885      0.339     0.282
+(0.0, 1.01]         42  0.905      0.476     0.476
+  by category (share of rows without late source):
+                 n  no_late   acc
+category                         
+Companies       30     0.63  0.50
+Crypto          35     0.51  0.69
+Elections       41     0.80  0.93
+Entertainment  110     0.45  0.88
+Mentions        26     0.15  0.77
+Politics       127     0.73  0.79
+Sports         125     0.46  0.92
+
+== 4. Why NO? keyword scan of reasoning for false-NO vs true-NO (GPT-5 nano reasoning, all distinct rows)
+analysis/t03_errors_evidence.py:50: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  P(f"  {lab:22s} n={len(r):4d} share with absence-of-evidence wording: {100*r.str.contains(pat, flags=re.I, regex=True).mean():.0f}%")
+  false NO (truth YES)   n= 155 share with absence-of-evidence wording: 75%
+analysis/t03_errors_evidence.py:50: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  P(f"  {lab:22s} n={len(r):4d} share with absence-of-evidence wording: {100*r.str.contains(pat, flags=re.I, regex=True).mean():.0f}%")
+  true NO                n= 634 share with absence-of-evidence wording: 56%
+analysis/t03_errors_evidence.py:50: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  P(f"  {lab:22s} n={len(r):4d} share with absence-of-evidence wording: {100*r.str.contains(pat, flags=re.I, regex=True).mean():.0f}%")
+  true YES               n= 320 share with absence-of-evidence wording: 13%
+
+== 5. Two-row markets: logical consistency of the pair (distinct rows)
+pairs=450; truth pattern (number of YES in pair): {0: 240, 1: 124, 2: 86}; predicted pattern: {0: 284, 1: 103, 2: 63}
+predicted YES in pair    0   1   2
+true YES in pair                  
+0                      225  10   5
+1                       35  80   9
+2                       24  13  49

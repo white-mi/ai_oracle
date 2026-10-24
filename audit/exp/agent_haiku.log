@@ -1,0 +1,7 @@
+[agent haiku] 25/150 176s cost $1.58 errors 0
+[agent haiku] 50/150 327s cost $3.06 errors 0
+[agent haiku] 75/150 519s cost $4.82 errors 0
+[agent haiku] 100/150 716s cost $6.57 errors 0
+[agent haiku] 125/150 875s cost $7.99 errors 0
+[agent haiku] 150/150 1057s cost $9.65 errors 0
+rows 150 done 150 decisions {'YES': 76, 'NO': 50, 'INSUFFICIENT': 24} market-site touched 15 cost 9.65

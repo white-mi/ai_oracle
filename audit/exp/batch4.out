@@ -1,0 +1,15 @@
+=== 18:36 e3_run.py annot
+[annot sonnet] 100/150 done, 27s, cost $3.27, errors 0
+[annot sonnet] 150/150 done, 90s, cost $4.50, errors 1
+annot rows 150 {'SILENT': 75, 'STATES': 50, 'IMPLIES': 23, 'CONTRADICTS': 1, nan: 1} cost 4.5 errors 1
+=== 18:37 e2_run.py closed sonnet45
+[closed sonnet45] 400/430 done, 642s, cost $4.44, errors 0
+[closed sonnet45] 430/430 done, 693s, cost $4.78, errors 0
+closed sonnet45 n 430 acc 0.6512 answers {'NO': 324, 'YES': 106} cost 4.78 errors 0
+=== 18:49 e2_run.py closed haiku55
+[closed haiku55] 400/430 done, 347s, cost $0.25, errors 0
+[closed haiku55] 430/430 done, 374s, cost $0.26, errors 0
+closed haiku55 n 430 acc 0.8419 answers {'NO': 260, 'YES': 170} cost 0.26 errors 0
+=== 18:55 e2_run.py rep1 sonnet45
+[rep1 sonnet45] 50/430 done, 125s, cost $1.55, errors 0
+[rep1 sonnet45] 100/430 done, 242s, cost $3.11, errors 0

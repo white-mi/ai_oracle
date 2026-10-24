@@ -1,0 +1,26 @@
+[annot sonnet] 50/150 done, 0s, cost $1.71, errors 0
+[annot sonnet] 100/150 done, 27s, cost $3.27, errors 0
+[annot sonnet] 150/150 done, 90s, cost $4.50, errors 1
+annot rows 150 {'SILENT': 75, 'STATES': 50, 'IMPLIES': 23, 'CONTRADICTS': 1, nan: 1} cost 4.5 errors 1
+[closed sonnet45] 50/430 done, 88s, cost $0.56, errors 0
+[closed sonnet45] 100/430 done, 166s, cost $1.12, errors 0
+[closed sonnet45] 150/430 done, 246s, cost $1.67, errors 0
+[closed sonnet45] 200/430 done, 325s, cost $2.22, errors 0
+[closed sonnet45] 250/430 done, 406s, cost $2.78, errors 0
+[closed sonnet45] 300/430 done, 487s, cost $3.33, errors 0
+[closed sonnet45] 350/430 done, 563s, cost $3.88, errors 0
+[closed sonnet45] 400/430 done, 642s, cost $4.44, errors 0
+[closed sonnet45] 430/430 done, 693s, cost $4.78, errors 0
+closed sonnet45 n 430 acc 0.6512 answers {'NO': 324, 'YES': 106} cost 4.78 errors 0
+[closed haiku55] 50/430 done, 45s, cost $0.03, errors 0
+[closed haiku55] 100/430 done, 89s, cost $0.06, errors 0
+[closed haiku55] 150/430 done, 132s, cost $0.09, errors 0
+[closed haiku55] 200/430 done, 177s, cost $0.12, errors 0
+[closed haiku55] 250/430 done, 221s, cost $0.15, errors 0
+[closed haiku55] 300/430 done, 260s, cost $0.18, errors 0
+[closed haiku55] 350/430 done, 302s, cost $0.21, errors 0
+[closed haiku55] 400/430 done, 347s, cost $0.25, errors 0
+[closed haiku55] 430/430 done, 374s, cost $0.26, errors 0
+closed haiku55 n 430 acc 0.8419 answers {'NO': 260, 'YES': 170} cost 0.26 errors 0
+[rep1 sonnet45] 50/430 done, 125s, cost $1.55, errors 0
+[rep1 sonnet45] 100/430 done, 242s, cost $3.11, errors 0

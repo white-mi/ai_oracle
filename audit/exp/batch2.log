@@ -1,0 +1,75 @@
+[closed haiku] 50/430 done, 52s, cost $0.24, errors 0
+[closed haiku] 100/430 done, 98s, cost $0.47, errors 0
+[closed haiku] 150/430 done, 145s, cost $0.70, errors 0
+[closed haiku] 200/430 done, 189s, cost $0.93, errors 0
+[closed haiku] 250/430 done, 234s, cost $1.17, errors 0
+[closed haiku] 300/430 done, 282s, cost $1.40, errors 0
+[closed haiku] 350/430 done, 327s, cost $1.64, errors 0
+[closed haiku] 400/430 done, 372s, cost $1.87, errors 0
+[closed haiku] 430/430 done, 401s, cost $2.01, errors 0
+closed haiku n 430 acc 0.6372 answers {'NO': 284, 'YES': 146} cost 2.01 errors 0
+[rep1 haiku] 50/430 done, 85s, cost $0.94, errors 0
+[rep1 haiku] 100/430 done, 165s, cost $1.91, errors 0
+[rep1 haiku] 150/430 done, 250s, cost $2.85, errors 0
+[rep1 haiku] 200/430 done, 331s, cost $3.80, errors 0
+[rep1 haiku] 250/430 done, 410s, cost $4.77, errors 0
+[rep1 haiku] 300/430 done, 490s, cost $5.72, errors 0
+[rep1 haiku] 350/430 done, 568s, cost $6.69, errors 0
+[rep1 haiku] 400/430 done, 651s, cost $7.62, errors 1
+[rep1 haiku] 430/430 done, 697s, cost $8.21, errors 1
+rep1 haiku n 430 acc 0.8442 answers {'NO': 294, 'YES': 135, nan: 1} cost 8.21 errors 1
+[abstain haiku] 50/430 done, 87s, cost $0.95, errors 0
+[abstain haiku] 100/430 done, 166s, cost $1.92, errors 0
+[abstain haiku] 150/430 done, 249s, cost $2.86, errors 0
+[abstain haiku] 200/430 done, 330s, cost $3.82, errors 0
+[abstain haiku] 250/430 done, 410s, cost $4.79, errors 0
+[abstain haiku] 300/430 done, 490s, cost $5.74, errors 0
+[abstain haiku] 350/430 done, 568s, cost $6.72, errors 0
+[abstain haiku] 400/430 done, 646s, cost $7.66, errors 1
+[abstain haiku] 430/430 done, 696s, cost $8.24, errors 1
+abstain haiku n 430 acc 0.6349 answers {'NO': 180, 'INSUFFICIENT': 128, 'YES': 121, nan: 1} cost 8.24 errors 1
+[noul haiku] 50/430 done, 61s, cost $0.86, errors 0
+[noul haiku] 100/430 done, 116s, cost $1.73, errors 0
+[noul haiku] 150/430 done, 172s, cost $2.58, errors 0
+[noul haiku] 200/430 done, 227s, cost $3.44, errors 0
+[noul haiku] 250/430 done, 285s, cost $4.32, errors 0
+[noul haiku] 300/430 done, 340s, cost $5.18, errors 0
+[noul haiku] 350/430 done, 395s, cost $6.06, errors 0
+[noul haiku] 400/430 done, 450s, cost $6.90, errors 1
+[noul haiku] 430/430 done, 485s, cost $7.44, errors 1
+noul haiku n 430 acc 0.8442 answers {'NO': 272, 'YES': 157, nan: 1} cost 7.44 errors 1
+[noulb haiku] 50/430 done, 57s, cost $0.85, errors 0
+[noulb haiku] 100/430 done, 107s, cost $1.70, errors 0
+[noulb haiku] 150/430 done, 161s, cost $2.55, errors 0
+[noulb haiku] 200/430 done, 213s, cost $3.39, errors 0
+[noulb haiku] 250/430 done, 264s, cost $4.26, errors 0
+[noulb haiku] 300/430 done, 315s, cost $5.10, errors 0
+[noulb haiku] 350/430 done, 364s, cost $5.98, errors 0
+[noulb haiku] 400/430 done, 418s, cost $6.81, errors 1
+[noulb haiku] 430/430 done, 449s, cost $7.33, errors 1
+noulb haiku n 430 acc 0.8209 answers {'NO': 312, 'YES': 117, nan: 1} cost 7.33 errors 1
+[rep2 haiku] 50/430 done, 87s, cost $0.95, errors 0
+[rep2 haiku] 100/430 done, 170s, cost $1.92, errors 0
+[rep2 haiku] 150/430 done, 252s, cost $2.86, errors 0
+[rep2 haiku] 200/430 done, 334s, cost $3.81, errors 0
+[rep2 haiku] 250/430 done, 417s, cost $4.78, errors 0
+[rep2 haiku] 300/430 done, 496s, cost $5.73, errors 0
+[rep2 haiku] 350/430 done, 575s, cost $6.70, errors 0
+[rep2 haiku] 400/430 done, 657s, cost $7.63, errors 1
+[rep2 haiku] 430/430 done, 706s, cost $8.22, errors 1
+rep2 haiku n 430 acc 0.8349 answers {'NO': 292, 'YES': 137, nan: 1} cost 8.22 errors 1
+[closed sonnet] 50/430 done, 35s, cost $0.41, errors 0
+[closed sonnet] 100/430 done, 70s, cost $0.83, errors 0
+[closed sonnet] 150/430 done, 107s, cost $1.26, errors 0
+[closed sonnet] 200/430 done, 142s, cost $1.70, errors 0
+[closed sonnet] 250/430 done, 176s, cost $2.12, errors 0
+[closed sonnet] 300/430 done, 210s, cost $2.55, errors 0
+[closed sonnet] 350/430 done, 243s, cost $2.97, errors 0
+[closed sonnet] 400/430 done, 277s, cost $3.39, errors 0
+[closed sonnet] 430/430 done, 299s, cost $3.65, errors 0
+closed sonnet n 430 acc 0.8605 answers {'NO': 266, 'YES': 164} cost 3.65 errors 0
+[date haiku] 50/150 done, 89s, cost $0.93, errors 1
+[date haiku] 100/150 done, 169s, cost $1.90, errors 1
+[date haiku] 150/150 done, 251s, cost $2.87, errors 1
+date haiku n 150 acc 0.8333 answers {'NO': 99, 'YES': 50, nan: 1} cost 2.87 errors 1
+BATCH2 DONE
