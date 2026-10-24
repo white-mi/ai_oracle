@@ -1,0 +1,53 @@
+== Tokens per oracle run (both models use the same token model)
+  single agent                 input    55,700  output  3,400 (x3 in the high scenario)  searches 4
+  leader, 2 workers            input    42,520  output  5,600 (x3 in the high scenario)  searches 4
+  debate, 3 agents, 2 rounds   input   133,681  output  6,000 (x3 in the high scenario)  searches 4
+  evidence tokens per search E = 4,820, base prompt B0 = 1,500, closed-book prompt 431
+
+== Cost of one run, USD (low = outputs as assumed, high = outputs x3 for longer reasoning)
+  claude-haiku-5-5  single agent                 LLM 0.0073-0.0107  + search 0.068
+  claude-haiku-5-5  leader, 2 workers            LLM 0.0071-0.0127  + search 0.068
+  claude-haiku-5-5  debate, 3 agents, 2 rounds   LLM 0.0164-0.0224  + search 0.068
+  gpt-5.4-mini      single agent                 LLM 0.0571-0.0877  + search 0.068
+  gpt-5.4-mini      leader, 2 workers            LLM 0.0571-0.1075  + search 0.068
+  gpt-5.4-mini      debate, 3 agents, 2 rounds   LLM 0.1273-0.1813  + search 0.068
+  Jev on the single agent's packet: 0.0008
+
+== Whole run: single agent on both models from 3 Nov (7 days), all oracles from 10 Nov (21 days), WAIT repeats 30%, reserve 10%
+  markets/day  markets    low $   high $  within 500 $ in the high scenario
+            8      224   181.22   222.45  yes
+           10      280   226.53   278.06  yes
+           12      336   271.84   333.67  yes
+           14      392   317.14   389.28  yes
+           16      448   362.45   444.89  yes
+           20      560   453.06   556.12  no
+  per market, low: single agent only 0.267, all oracles 0.892
+  per market, high: single agent only 0.321, all oracles 1.097
+
+== Share of search in the cost of one market with all oracles
+  low: search 0.530 of 0.892 (59%)
+  high: search 0.530 of 1.097 (48%)
+
+== LangSmith traces a month (free plan: 5,000)
+  12 markets/day: LLM oracle runs 2,184; tracing Jev and controls too 3,108
+  16 markets/day: LLM oracle runs 2,912; tracing Jev and controls too 4,144
+  20 markets/day: LLM oracle runs 3,640; tracing Jev and controls too 5,180
+
+== Power of the architecture test (paired by market and model, both models pooled)
+  one-sided exact sign test on discordant pairs at alpha 0.05/3 (first Holm step) and 0.05; true improvement 5 pp; discordance = share of pairs where exactly one of the two oracles closes wrongly
+  10 markets/day: 420 pairs, discordance 10% (42 pairs): power 0.86 at 0.05/3, 0.96 at 0.05
+  10 markets/day: 420 pairs, discordance 15% (63 pairs): power 0.66 at 0.05/3, 0.83 at 0.05
+  10 markets/day: 420 pairs, discordance 20% (84 pairs): power 0.50 at 0.05/3, 0.68 at 0.05
+  12 markets/day: 504 pairs, discordance 10% (50 pairs): power 0.94 at 0.05/3, 0.97 at 0.05
+  12 markets/day: 504 pairs, discordance 15% (76 pairs): power 0.78 at 0.05/3, 0.89 at 0.05
+  12 markets/day: 504 pairs, discordance 20% (101 pairs): power 0.63 at 0.05/3, 0.77 at 0.05
+  14 markets/day: 588 pairs, discordance 10% (59 pairs): power 0.95 at 0.05/3, 0.99 at 0.05
+  14 markets/day: 588 pairs, discordance 15% (88 pairs): power 0.83 at 0.05/3, 0.92 at 0.05
+  14 markets/day: 588 pairs, discordance 20% (118 pairs): power 0.67 at 0.05/3, 0.84 at 0.05
+
+== P4: most errors among automatically closed markets that keep the one-sided 95% upper bound at or below 5%
+  100 closed automatically: at most 1 errors (1.0%), upper bound 0.047
+  150 closed automatically: at most 2 errors (1.3%), upper bound 0.041
+  200 closed automatically: at most 4 errors (2.0%), upper bound 0.045
+  250 closed automatically: at most 6 errors (2.4%), upper bound 0.047
+  300 closed automatically: at most 8 errors (2.7%), upper bound 0.048
